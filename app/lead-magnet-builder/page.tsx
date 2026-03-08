@@ -1,16 +1,24 @@
-const [hasAccess, setHasAccess] = useState(false);
-
 "use client";
 
 import { useEffect, useState } from "react";
 
 export default function LeadMagnetBuilderPage() {
+  const [hasAccess, setHasAccess] = useState(false);
   const [avatarAnalysis, setAvatarAnalysis] = useState("");
   const [structuredAvatar, setStructuredAvatar] = useState<any>(null);
   const [currentProblem, setCurrentProblem] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const savedAccess = localStorage.getItem("appAccessGranted");
+
+    if (savedAccess !== "yes") {
+      window.location.href = "/";
+      return;
+    }
+
+    setHasAccess(true);
+
     const savedAnalysis = localStorage.getItem("confirmedAvatarAnalysis");
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
     const savedProblem = localStorage.getItem("leadMagnetCurrentProblem");
@@ -43,9 +51,10 @@ export default function LeadMagnetBuilderPage() {
     }
 
     localStorage.setItem("leadMagnetCurrentProblem", currentProblem.trim());
-
     window.location.href = "/lead-magnet-builder/step-1";
   };
+
+  if (!hasAccess) return null;
 
   return (
     <main className="min-h-screen bg-white text-black p-10">
