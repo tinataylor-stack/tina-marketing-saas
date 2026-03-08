@@ -51,6 +51,8 @@ type FinalResult = {
 };
 
 export default function LeadMagnetFinalPage() {
+  const [hasAccess, setHasAccess] = useState(false);
+
   const [structuredAvatar, setStructuredAvatar] = useState<any>(null);
   const [currentProblem, setCurrentProblem] = useState("");
   const [selectedBigProblem, setSelectedBigProblem] =
@@ -67,6 +69,15 @@ export default function LeadMagnetFinalPage() {
   const [hasGenerated, setHasGenerated] = useState(false);
 
   useEffect(() => {
+    const savedAccess = localStorage.getItem("appAccessGranted");
+
+    if (savedAccess !== "yes") {
+      window.location.href = "/";
+      return;
+    }
+
+    setHasAccess(true);
+
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
     const savedProblem = localStorage.getItem("leadMagnetCurrentProblem");
     const savedSelectedProblem = localStorage.getItem("selectedBigProblem");
@@ -140,6 +151,8 @@ export default function LeadMagnetFinalPage() {
     }
   };
 
+  if (!hasAccess) return null;
+
   return (
     <main className="min-h-screen bg-white text-black p-10">
       <div className="max-w-5xl mx-auto">
@@ -189,7 +202,9 @@ export default function LeadMagnetFinalPage() {
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => (window.location.href = "/lead-magnet-builder/step-4")}
+                  onClick={() =>
+                    (window.location.href = "/lead-magnet-builder/step-4")
+                  }
                   className="border px-6 py-3 rounded-lg"
                 >
                   กลับไป Step 4
@@ -266,7 +281,9 @@ export default function LeadMagnetFinalPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => (window.location.href = "/lead-magnet-builder/step-4")}
+                onClick={() =>
+                  (window.location.href = "/lead-magnet-builder/step-4")
+                }
                 className="border px-6 py-3 rounded-lg"
               >
                 กลับไป Step 4

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FormData = {
   business: string;
@@ -11,6 +11,20 @@ type FormData = {
 };
 
 export default function AvatarAnalyzerPage() {
+
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => {
+  const savedAccess = localStorage.getItem("appAccessGranted");
+
+  if (savedAccess !== "yes") {
+    window.location.href = "/";
+    return;
+  }
+
+  setHasAccess(true);
+}, []);
+
   const [form, setForm] = useState<FormData>({
     business: "",
     product: "",
@@ -127,7 +141,7 @@ export default function AvatarAnalyzerPage() {
     setError("");
     setSuccessMessage("บันทึก Avatar เรียบร้อยแล้ว");
   };
-
+if (!hasAccess) return null;
   return (
     <main className="min-h-screen bg-white text-black p-10">
       <div className="max-w-4xl mx-auto">

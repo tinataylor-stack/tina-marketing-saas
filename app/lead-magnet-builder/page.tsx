@@ -1,3 +1,5 @@
+const [hasAccess, setHasAccess] = useState(false);
+
 "use client";
 
 import { useEffect, useState } from "react";

@@ -11,27 +11,42 @@ type BigProblemOption = {
 };
 
 export default function LeadMagnetStep1Page() {
+  const [hasAccess, setHasAccess] = useState(false);
+
   const [avatarAnalysis, setAvatarAnalysis] = useState("");
   const [structuredAvatar, setStructuredAvatar] = useState<any>(null);
   const [currentProblem, setCurrentProblem] = useState("");
 
   const [avatarSummary, setAvatarSummary] = useState("");
-  const [bigProblemOptions, setBigProblemOptions] = useState<BigProblemOption[]>([]);
-  const [selectedProblemIndex, setSelectedProblemIndex] = useState<number | null>(null);
+  const [bigProblemOptions, setBigProblemOptions] = useState<BigProblemOption[]>(
+    []
+  );
+  const [selectedProblemIndex, setSelectedProblemIndex] = useState<number | null>(
+    null
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
 
   useEffect(() => {
+    const savedAccess = localStorage.getItem("appAccessGranted");
+
+    if (savedAccess !== "yes") {
+      window.location.href = "/";
+      return;
+    }
+
+    setHasAccess(true);
+
     const savedAnalysis = localStorage.getItem("confirmedAvatarAnalysis");
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
     const savedProblem = localStorage.getItem("leadMagnetCurrentProblem");
 
     if (!savedAnalysis || !savedStructured || !savedProblem) {
-  setError("ข้อมูลไม่ครบ กรุณากลับไปกรอกข้อมูลก่อน");
-  return;
-}
+      setError("ข้อมูลไม่ครบ กรุณากลับไปกรอกข้อมูลก่อน");
+      return;
+    }
 
     setAvatarAnalysis(savedAnalysis);
     setCurrentProblem(savedProblem);
@@ -62,7 +77,6 @@ export default function LeadMagnetStep1Page() {
       });
 
       const data = await res.json();
-     
 
       if (!res.ok) {
         throw new Error(data.error || "เกิดข้อผิดพลาดในการสร้าง Step 1");
@@ -73,7 +87,9 @@ export default function LeadMagnetStep1Page() {
         !Array.isArray(data.bigProblemOptions) ||
         data.bigProblemOptions.length === 0
       ) {
-        throw new Error("Step 1 API ไม่ได้ส่ง avatarSummary หรือ bigProblemOptions กลับมา");
+        throw new Error(
+          "Step 1 API ไม่ได้ส่ง avatarSummary หรือ bigProblemOptions กลับมา"
+        );
       }
 
       setAvatarSummary(data.avatarSummary);
@@ -98,11 +114,12 @@ export default function LeadMagnetStep1Page() {
     }
 
     const selectedProblem = bigProblemOptions[selectedProblemIndex];
-
     localStorage.setItem("selectedBigProblem", JSON.stringify(selectedProblem));
 
     window.location.href = "/lead-magnet-builder/step-2";
   };
+
+  if (!hasAccess) return null;
 
   return (
     <main className="min-h-screen bg-white text-black p-10">
@@ -132,8 +149,6 @@ export default function LeadMagnetStep1Page() {
               <p className="mb-3 text-sm leading-7">
                 <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
               </p>
-
-              
             </div>
 
             <div className="flex gap-3">
@@ -169,62 +184,59 @@ export default function LeadMagnetStep1Page() {
             <div>
               <h2 className="text-2xl font-semibold mb-4">กดเลือก Big Problem</h2>
 
-<div className="grid gap-4">
-  {bigProblemOptions.map((option, index) => {
-    const isSelected = selectedProblemIndex === index;
+              <div className="grid gap-4">
+                {bigProblemOptions.map((option, index) => {
+                  const isSelected = selectedProblemIndex === index;
 
-    return (
-      <button
-        key={index}
-        type="button"
-        onClick={() => {
-          
-          handleSelectProblem(index);
-        }}
-        aria-pressed={isSelected}
-        className={`text-left border-2 rounded-xl p-6 transition ${
-          isSelected
-            ? "border-green-600 bg-green-50 ring-2 ring-green-200"
-            : "border-gray-300 bg-white hover:border-gray-400"
-        }`}
-      >
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <h3 className="text-xl font-semibold">
-            ข้อ {index + 1}: {option.title}
-          </h3>
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleSelectProblem(index)}
+                      aria-pressed={isSelected}
+                      className={`text-left border-2 rounded-xl p-6 transition ${
+                        isSelected
+                          ? "border-green-600 bg-green-50 ring-2 ring-green-200"
+                          : "border-gray-300 bg-white hover:border-gray-400"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <h3 className="text-xl font-semibold">
+                          ข้อ {index + 1}: {option.title}
+                        </h3>
 
-          {isSelected && (
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
-              ✓
-            </span>
-          )}
-        </div>
+                        {isSelected && (
+                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
+                            ✓
+                          </span>
+                        )}
+                      </div>
 
-        <div className="space-y-3 text-sm leading-7">
-          <div>
-            <strong>อาการที่เขาเจอ:</strong>
-            <div>{option.symptoms}</div>
-          </div>
+                      <div className="space-y-3 text-sm leading-7">
+                        <div>
+                          <strong>อาการที่เขาเจอ:</strong>
+                          <div>{option.symptoms}</div>
+                        </div>
 
-          <div>
-            <strong>ต้นเหตุเชิงโครงสร้าง:</strong>
-            <div>{option.rootCause}</div>
-          </div>
+                        <div>
+                          <strong>ต้นเหตุเชิงโครงสร้าง:</strong>
+                          <div>{option.rootCause}</div>
+                        </div>
 
-          <div>
-            <strong>ผลกระทบถ้าไม่แก้:</strong>
-            <div>{option.costOfInaction}</div>
-          </div>
+                        <div>
+                          <strong>ผลกระทบถ้าไม่แก้:</strong>
+                          <div>{option.costOfInaction}</div>
+                        </div>
 
-          <div>
-            <strong>เหมาะกับ Lead Magnet แบบ:</strong>
-            <div>{option.leadMagnetType}</div>
-          </div>
-        </div>
-      </button>
-    );
-  })}
-</div>
+                        <div>
+                          <strong>เหมาะกับ Lead Magnet แบบ:</strong>
+                          <div>{option.leadMagnetType}</div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3">

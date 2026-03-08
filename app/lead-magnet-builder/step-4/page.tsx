@@ -37,6 +37,8 @@ type NextStepOption = {
 };
 
 export default function LeadMagnetStep4Page() {
+  const [hasAccess, setHasAccess] = useState(false);
+
   const [structuredAvatar, setStructuredAvatar] = useState<any>(null);
   const [currentProblem, setCurrentProblem] = useState("");
   const [selectedBigProblem, setSelectedBigProblem] =
@@ -56,6 +58,15 @@ export default function LeadMagnetStep4Page() {
   const [hasGenerated, setHasGenerated] = useState(false);
 
   useEffect(() => {
+    const savedAccess = localStorage.getItem("appAccessGranted");
+
+    if (savedAccess !== "yes") {
+      window.location.href = "/";
+      return;
+    }
+
+    setHasAccess(true);
+
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
     const savedProblem = localStorage.getItem("leadMagnetCurrentProblem");
     const savedSelectedProblem = localStorage.getItem("selectedBigProblem");
@@ -134,10 +145,10 @@ export default function LeadMagnetStep4Page() {
   };
 
   const handleSelectOption = (index: number) => {
-  setSelectedOptionIndex(index);
-  setCustomNextStep("");
-  setError("");
-};
+    setSelectedOptionIndex(index);
+    setCustomNextStep("");
+    setError("");
+  };
 
   const handleApprove = async () => {
     if (selectedOptionIndex === null && !customNextStep.trim()) {
@@ -187,14 +198,16 @@ export default function LeadMagnetStep4Page() {
 
     const selectedOption = section5Options[selectedOptionIndex!];
 
-if (!selectedOption) {
-  setError("ไม่พบ Next Step ที่เลือก");
-  return;
-}
+    if (!selectedOption) {
+      setError("ไม่พบ Next Step ที่เลือก");
+      return;
+    }
 
-localStorage.setItem("leadMagnetSection5", JSON.stringify(selectedOption));
-window.location.href = "/lead-magnet-builder/final";
+    localStorage.setItem("leadMagnetSection5", JSON.stringify(selectedOption));
+    window.location.href = "/lead-magnet-builder/final";
   };
+
+  if (!hasAccess) return null;
 
   return (
     <main className="min-h-screen bg-white text-black p-10">
@@ -324,10 +337,10 @@ window.location.href = "/lead-magnet-builder/final";
 
               <textarea
                 value={customNextStep}
-               onChange={(e) => {
-  setCustomNextStep(e.target.value);
-  setSelectedOptionIndex(null);
-}}
+                onChange={(e) => {
+                  setCustomNextStep(e.target.value);
+                  setSelectedOptionIndex(null);
+                }}
                 className="w-full border p-3 rounded-lg"
                 rows={4}
                 placeholder="เช่น ให้พาไปแอด LINE เพื่อรับ Mock Exam A-Level ภาษาจีน"

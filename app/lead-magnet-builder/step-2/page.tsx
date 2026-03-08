@@ -23,10 +23,13 @@ type Section3 = {
 };
 
 export default function LeadMagnetStep2Page() {
+  const [hasAccess, setHasAccess] = useState(false);
+
   const [avatarAnalysis, setAvatarAnalysis] = useState("");
   const [structuredAvatar, setStructuredAvatar] = useState<any>(null);
   const [currentProblem, setCurrentProblem] = useState("");
-  const [selectedBigProblem, setSelectedBigProblem] = useState<BigProblemOption | null>(null);
+  const [selectedBigProblem, setSelectedBigProblem] =
+    useState<BigProblemOption | null>(null);
 
   const [section2, setSection2] = useState<Section2 | null>(null);
   const [section3, setSection3] = useState<Section3 | null>(null);
@@ -36,6 +39,15 @@ export default function LeadMagnetStep2Page() {
   const [hasGenerated, setHasGenerated] = useState(false);
 
   useEffect(() => {
+    const savedAccess = localStorage.getItem("appAccessGranted");
+
+    if (savedAccess !== "yes") {
+      window.location.href = "/";
+      return;
+    }
+
+    setHasAccess(true);
+
     const savedAnalysis = localStorage.getItem("confirmedAvatarAnalysis");
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
     const savedProblem = localStorage.getItem("leadMagnetCurrentProblem");
@@ -110,6 +122,8 @@ export default function LeadMagnetStep2Page() {
 
     window.location.href = "/lead-magnet-builder/step-3";
   };
+
+  if (!hasAccess) return null;
 
   return (
     <main className="min-h-screen bg-white text-black p-10">
