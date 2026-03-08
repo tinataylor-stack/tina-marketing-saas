@@ -26,6 +26,9 @@ export default function LeadMagnetStep1Page() {
   );
 
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const [error, setError] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -58,10 +61,33 @@ export default function LeadMagnetStep1Page() {
     }
   }, []);
 
+  const runLoadingSequence = () => {
+    const timers = [
+      setTimeout(() => {
+        setLoadingStep(1);
+        setLoadingMessage("กำลังอ่านข้อมูล Avatar และปัญหาที่คุณระบุ...");
+      }, 0),
+      setTimeout(() => {
+        setLoadingStep(2);
+        setLoadingMessage("กำลังวิเคราะห์และหา Big Problem ที่เหมาะ...");
+      }, 1200),
+      setTimeout(() => {
+        setLoadingStep(3);
+        setLoadingMessage("กำลังจัดโครงตัวเลือกให้อ่านง่ายและพร้อมเลือก...");
+      }, 2800),
+    ];
+
+    return timers;
+  };
+
   const generateStep1 = async () => {
     setLoading(true);
     setError("");
     setSelectedProblemIndex(null);
+    setLoadingMessage("");
+    setLoadingStep(0);
+
+    const timers = runLoadingSequence();
 
     try {
       const res = await fetch("/api/lead-magnet/from-avatar", {
@@ -98,7 +124,10 @@ export default function LeadMagnetStep1Page() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
     } finally {
+      timers.forEach(clearTimeout);
       setLoading(false);
+      setLoadingMessage("");
+      setLoadingStep(0);
     }
   };
 
@@ -135,135 +164,197 @@ export default function LeadMagnetStep1Page() {
           </div>
         )}
 
-        {!hasGenerated && structuredAvatar && (
-          <div className="space-y-6 max-w-3xl">
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">ข้อมูลที่ใช้สร้าง Step 1</h2>
+        <div className={loading ? "opacity-60 pointer-events-none" : ""}>
+          {!hasGenerated && structuredAvatar && (
+            <div className="space-y-6 max-w-3xl">
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">ข้อมูลที่ใช้สร้าง Step 1</h2>
 
-              {structuredAvatar?.shortSummary && (
+                {structuredAvatar?.shortSummary && (
+                  <p className="mb-3 text-sm leading-7">
+                    <strong>Avatar:</strong> {structuredAvatar.shortSummary}
+                  </p>
+                )}
+
                 <p className="mb-3 text-sm leading-7">
-                  <strong>Avatar:</strong> {structuredAvatar.shortSummary}
+                  <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
                 </p>
-              )}
+              </div>
 
-              <p className="mb-3 text-sm leading-7">
-                <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
-              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = "/lead-magnet-builder")}
+                  className="border px-6 py-3 rounded-lg"
+                >
+                  กลับไปแก้ข้อมูล
+                </button>
+
+                <button
+                  type="button"
+                  onClick={generateStep1}
+                  disabled={loading}
+                  className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
+                >
+                  {loading ? "กำลังสร้าง Step 1..." : "สร้าง Step 1"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {hasGenerated && (
+            <div className="space-y-6">
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">สรุป Avatar</h2>
+                <div className="whitespace-pre-wrap text-sm leading-7">
+                  {avatarSummary}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">กดเลือก Big Problem</h2>
+
+                <div className="grid gap-4">
+                  {bigProblemOptions.map((option, index) => {
+                    const isSelected = selectedProblemIndex === index;
+
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleSelectProblem(index)}
+                        aria-pressed={isSelected}
+                        className={`text-left border-2 rounded-xl p-6 transition ${
+                          isSelected
+                            ? "border-green-600 bg-green-50 ring-2 ring-green-200"
+                            : "border-gray-300 bg-white hover:border-gray-400"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <h3 className="text-xl font-semibold">
+                            ข้อ {index + 1}: {option.title}
+                          </h3>
+
+                          {isSelected && (
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
+                              ✓
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-3 text-sm leading-7">
+                          <div>
+                            <strong>อาการที่เขาเจอ:</strong>
+                            <div>{option.symptoms}</div>
+                          </div>
+
+                          <div>
+                            <strong>ต้นเหตุเชิงโครงสร้าง:</strong>
+                            <div>{option.rootCause}</div>
+                          </div>
+
+                          <div>
+                            <strong>ผลกระทบถ้าไม่แก้:</strong>
+                            <div>{option.costOfInaction}</div>
+                          </div>
+
+                          <div>
+                            <strong>เหมาะกับ Lead Magnet แบบ:</strong>
+                            <div>{option.leadMagnetType}</div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={generateStep1}
+                  disabled={loading}
+                  className="border px-6 py-3 rounded-lg disabled:opacity-60"
+                >
+                  {loading ? "กำลังสร้างใหม่..." : "สร้าง Step 1 ใหม่"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = "/lead-magnet-builder")}
+                  className="border px-6 py-3 rounded-lg"
+                >
+                  กลับไปแก้ข้อมูล
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleContinue}
+                  className="bg-black text-white px-6 py-3 rounded-lg"
+                >
+                  ไป Step 2
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {loading && (
+          <div className="mt-8 border rounded-xl p-6 bg-gray-50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-3 w-3 rounded-full bg-black animate-pulse" />
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                กำลังประมวลผล
+                <span className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </span>
+              </h2>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => (window.location.href = "/lead-magnet-builder")}
-                className="border px-6 py-3 rounded-lg"
-              >
-                กลับไปแก้ข้อมูล
-              </button>
+            <p className="text-sm text-gray-700 mb-4">{loadingMessage}</p>
 
-              <button
-                type="button"
-                onClick={generateStep1}
-                disabled={loading}
-                className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
+            <div className="space-y-3 text-sm mt-4">
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 1 ? "text-black font-medium" : "text-gray-400"
+                }`}
               >
-                {loading ? "กำลังสร้าง Step 1..." : "สร้าง Step 1"}
-              </button>
-            </div>
-          </div>
-        )}
+                {loadingStep >= 1 ? "✓" : "○"} อ่านข้อมูล Avatar และปัญหาหลัก
+              </div>
 
-        {hasGenerated && (
-          <div className="space-y-6">
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">สรุป Avatar</h2>
-              <div className="whitespace-pre-wrap text-sm leading-7">
-                {avatarSummary}
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 2 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 2 ? "✓" : "○"} วิเคราะห์และสร้าง Big Problem options
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 3 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 3 ? "✓" : "○"} เรียบเรียงผลลัพธ์ให้อ่านง่ายและพร้อมเลือก
               </div>
             </div>
 
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">กดเลือก Big Problem</h2>
-
-              <div className="grid gap-4">
-                {bigProblemOptions.map((option, index) => {
-                  const isSelected = selectedProblemIndex === index;
-
-                  return (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleSelectProblem(index)}
-                      aria-pressed={isSelected}
-                      className={`text-left border-2 rounded-xl p-6 transition ${
-                        isSelected
-                          ? "border-green-600 bg-green-50 ring-2 ring-green-200"
-                          : "border-gray-300 bg-white hover:border-gray-400"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        <h3 className="text-xl font-semibold">
-                          ข้อ {index + 1}: {option.title}
-                        </h3>
-
-                        {isSelected && (
-                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
-                            ✓
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="space-y-3 text-sm leading-7">
-                        <div>
-                          <strong>อาการที่เขาเจอ:</strong>
-                          <div>{option.symptoms}</div>
-                        </div>
-
-                        <div>
-                          <strong>ต้นเหตุเชิงโครงสร้าง:</strong>
-                          <div>{option.rootCause}</div>
-                        </div>
-
-                        <div>
-                          <strong>ผลกระทบถ้าไม่แก้:</strong>
-                          <div>{option.costOfInaction}</div>
-                        </div>
-
-                        <div>
-                          <strong>เหมาะกับ Lead Magnet แบบ:</strong>
-                          <div>{option.leadMagnetType}</div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={generateStep1}
-                disabled={loading}
-                className="border px-6 py-3 rounded-lg disabled:opacity-60"
-              >
-                {loading ? "กำลังสร้างใหม่..." : "สร้าง Step 1 ใหม่"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (window.location.href = "/lead-magnet-builder")}
-                className="border px-6 py-3 rounded-lg"
-              >
-                กลับไปแก้ข้อมูล
-              </button>
-
-              <button
-                type="button"
-                onClick={handleContinue}
-                className="bg-black text-white px-6 py-3 rounded-lg"
-              >
-                ไป Step 2
-              </button>
+            <div className="mt-4 h-2 w-full overflow-hidden rounded bg-gray-200">
+              <div
+                className="h-full rounded bg-black transition-all duration-700"
+                style={{
+                  width:
+                    loadingStep === 0
+                      ? "10%"
+                      : loadingStep === 1
+                      ? "33%"
+                      : loadingStep === 2
+                      ? "66%"
+                      : "90%",
+                }}
+              />
             </div>
           </div>
         )}

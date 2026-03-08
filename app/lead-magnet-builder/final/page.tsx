@@ -65,6 +65,9 @@ export default function LeadMagnetFinalPage() {
   const [finalResult, setFinalResult] = useState<FinalResult | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const [error, setError] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -113,9 +116,32 @@ export default function LeadMagnetFinalPage() {
     }
   }, []);
 
+  const runLoadingSequence = () => {
+    const timers = [
+      setTimeout(() => {
+        setLoadingStep(1);
+        setLoadingMessage("กำลังรวมข้อมูลจากทุก Step...");
+      }, 0),
+      setTimeout(() => {
+        setLoadingStep(2);
+        setLoadingMessage("กำลังเขียน Lead Magnet Draft และคิดชื่อที่เหมาะ...");
+      }, 1200),
+      setTimeout(() => {
+        setLoadingStep(3);
+        setLoadingMessage("กำลังสร้าง CTA และเรียบเรียงหน้าสรุปให้นำไปใช้ได้...");
+      }, 2800),
+    ];
+
+    return timers;
+  };
+
   const generateFinal = async (regenerate = false) => {
     setLoading(true);
     setError("");
+    setLoadingMessage("");
+    setLoadingStep(0);
+
+    const timers = runLoadingSequence();
 
     try {
       const res = await fetch("/api/lead-magnet/final", {
@@ -147,7 +173,10 @@ export default function LeadMagnetFinalPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
     } finally {
+      timers.forEach(clearTimeout);
       setLoading(false);
+      setLoadingMessage("");
+      setLoadingStep(0);
     }
   };
 
@@ -167,39 +196,119 @@ export default function LeadMagnetFinalPage() {
           </div>
         )}
 
-        {!hasGenerated &&
-          selectedBigProblem &&
-          section2 &&
-          section3 &&
-          section4 &&
-          section5 && (
-            <div className="space-y-6">
-              <div className="border rounded-xl p-6 bg-gray-50 space-y-3 text-sm leading-7">
-                <h2 className="text-2xl font-semibold mb-2">
-                  ข้อมูลที่ใช้สร้างหน้าสรุป
-                </h2>
+        <div className={loading ? "opacity-60 pointer-events-none" : ""}>
+          {!hasGenerated &&
+            selectedBigProblem &&
+            section2 &&
+            section3 &&
+            section4 &&
+            section5 && (
+              <div className="space-y-6">
+                <div className="border rounded-xl p-6 bg-gray-50 space-y-3 text-sm leading-7">
+                  <h2 className="text-2xl font-semibold mb-2">
+                    ข้อมูลที่ใช้สร้างหน้าสรุป
+                  </h2>
 
-                <div>
-                  <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
+                  <div>
+                    <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
+                  </div>
+                  <div>
+                    <strong>Section 1:</strong> {selectedBigProblem.title}
+                  </div>
+                  <div>
+                    <strong>Section 2:</strong> {section2.newBelief}
+                  </div>
+                  <div>
+                    <strong>Section 3:</strong> {section3.format}
+                  </div>
+                  <div>
+                    <strong>Section 4:</strong> {section4.gapSummary}
+                  </div>
+                  <div>
+                    <strong>Section 5:</strong> {section5.title}
+                  </div>
                 </div>
-                <div>
-                  <strong>Section 1:</strong> {selectedBigProblem.title}
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      (window.location.href = "/lead-magnet-builder/step-4")
+                    }
+                    className="border px-6 py-3 rounded-lg"
+                  >
+                    กลับไป Step 4
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => generateFinal(false)}
+                    disabled={loading}
+                    className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
+                  >
+                    {loading ? "กำลังสร้างหน้าสรุป..." : "สร้างหน้าสรุป"}
+                  </button>
                 </div>
-                <div>
-                  <strong>Section 2:</strong> {section2.newBelief}
-                </div>
-                <div>
-                  <strong>Section 3:</strong> {section3.format}
-                </div>
-                <div>
-                  <strong>Section 4:</strong> {section4.gapSummary}
-                </div>
-                <div>
-                  <strong>Section 5:</strong> {section5.title}
+              </div>
+            )}
+
+          {hasGenerated && finalResult && (
+            <div className="space-y-8">
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">Lead Magnet Draft</h2>
+                <div className="whitespace-pre-wrap text-sm leading-7">
+                  {finalResult.leadMagnetDraft}
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">Title Options</h2>
+                <ol className="list-decimal pl-6 text-sm leading-7">
+                  {finalResult.titleOptions.map((title, index) => (
+                    <li key={index}>{title}</li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">Suggested Format</h2>
+                <div className="space-y-3 text-sm leading-7">
+                  <div>
+                    <strong>Format:</strong> {finalResult.suggestedFormat.format}
+                  </div>
+                  <div>
+                    <strong>Reason:</strong> {finalResult.suggestedFormat.reason}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">CTA Copy</h2>
+                <div className="space-y-4 text-sm leading-7">
+                  <div>
+                    <strong>Social Post:</strong>
+                    <div className="whitespace-pre-wrap">
+                      {finalResult.ctaCopy.socialPost}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong>LINE Welcome:</strong>
+                    <div className="whitespace-pre-wrap">
+                      {finalResult.ctaCopy.lineWelcome}
+                    </div>
+                  </div>
+
+                  <div>
+                    <strong>Landing Page Hero:</strong>
+                    <div className="whitespace-pre-wrap">
+                      {finalResult.ctaCopy.landingHero}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={() =>
@@ -212,91 +321,73 @@ export default function LeadMagnetFinalPage() {
 
                 <button
                   type="button"
-                  onClick={() => generateFinal(false)}
+                  onClick={() => generateFinal(true)}
                   disabled={loading}
-                  className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
+                  className="border px-6 py-3 rounded-lg disabled:opacity-60"
                 >
-                  {loading ? "กำลังสร้างหน้าสรุป..." : "สร้างหน้าสรุป"}
+                  {loading ? "กำลังสร้างใหม่..." : "สร้างหน้าสรุปใหม่"}
                 </button>
               </div>
             </div>
           )}
+        </div>
 
-        {hasGenerated && finalResult && (
-          <div className="space-y-8">
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">Lead Magnet Draft</h2>
-              <div className="whitespace-pre-wrap text-sm leading-7">
-                {finalResult.leadMagnetDraft}
-              </div>
+        {loading && (
+          <div className="mt-8 border rounded-xl p-6 bg-gray-50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-3 w-3 rounded-full bg-black animate-pulse" />
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                กำลังประมวลผล
+                <span className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </span>
+              </h2>
             </div>
 
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">Title Options</h2>
-              <ol className="list-decimal pl-6 text-sm leading-7">
-                {finalResult.titleOptions.map((title, index) => (
-                  <li key={index}>{title}</li>
-                ))}
-              </ol>
-            </div>
+            <p className="text-sm text-gray-700 mb-4">{loadingMessage}</p>
 
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">Suggested Format</h2>
-              <div className="space-y-3 text-sm leading-7">
-                <div>
-                  <strong>Format:</strong> {finalResult.suggestedFormat.format}
-                </div>
-                <div>
-                  <strong>Reason:</strong> {finalResult.suggestedFormat.reason}
-                </div>
-              </div>
-            </div>
-
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">CTA Copy</h2>
-              <div className="space-y-4 text-sm leading-7">
-                <div>
-                  <strong>Social Post:</strong>
-                  <div className="whitespace-pre-wrap">
-                    {finalResult.ctaCopy.socialPost}
-                  </div>
-                </div>
-
-                <div>
-                  <strong>LINE Welcome:</strong>
-                  <div className="whitespace-pre-wrap">
-                    {finalResult.ctaCopy.lineWelcome}
-                  </div>
-                </div>
-
-                <div>
-                  <strong>Landing Page Hero:</strong>
-                  <div className="whitespace-pre-wrap">
-                    {finalResult.ctaCopy.landingHero}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  (window.location.href = "/lead-magnet-builder/step-4")
-                }
-                className="border px-6 py-3 rounded-lg"
+            <div className="space-y-3 text-sm mt-4">
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 1 ? "text-black font-medium" : "text-gray-400"
+                }`}
               >
-                กลับไป Step 4
-              </button>
+                {loadingStep >= 1 ? "✓" : "○"} รวมข้อมูลจากทุก Step
+              </div>
 
-              <button
-                type="button"
-                onClick={() => generateFinal(true)}
-                disabled={loading}
-                className="border px-6 py-3 rounded-lg disabled:opacity-60"
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 2 ? "text-black font-medium" : "text-gray-400"
+                }`}
               >
-                {loading ? "กำลังสร้างใหม่..." : "สร้างหน้าสรุปใหม่"}
-              </button>
+                {loadingStep >= 2 ? "✓" : "○"} เขียน Draft และคิด Title Options
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 3 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 3 ? "✓" : "○"} สร้าง CTA และเรียบเรียงผลลัพธ์ให้พร้อมใช้
+              </div>
+            </div>
+
+            <div className="mt-4 h-2 w-full overflow-hidden rounded bg-gray-200">
+              <div
+                className="h-full rounded bg-black transition-all duration-700"
+                style={{
+                  width:
+                    loadingStep === 0
+                      ? "10%"
+                      : loadingStep === 1
+                      ? "33%"
+                      : loadingStep === 2
+                      ? "66%"
+                      : "90%",
+                }}
+              />
             </div>
           </div>
         )}

@@ -54,6 +54,9 @@ export default function LeadMagnetStep4Page() {
   const [customNextStep, setCustomNextStep] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const [error, setError] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -99,10 +102,33 @@ export default function LeadMagnetStep4Page() {
     }
   }, []);
 
+  const runLoadingSequence = () => {
+    const timers = [
+      setTimeout(() => {
+        setLoadingStep(1);
+        setLoadingMessage("กำลังอ่านข้อมูลจาก Step ก่อนหน้า...");
+      }, 0),
+      setTimeout(() => {
+        setLoadingStep(2);
+        setLoadingMessage("กำลังสร้างทางเลือก Next Step ที่เหมาะกับ Avatar นี้...");
+      }, 1200),
+      setTimeout(() => {
+        setLoadingStep(3);
+        setLoadingMessage("กำลังเรียบเรียงตัวเลือกให้อ่านง่ายและพร้อมเลือก...");
+      }, 2800),
+    ];
+
+    return timers;
+  };
+
   const generateStep4 = async (regenerate = false) => {
     setLoading(true);
     setError("");
     setSelectedOptionIndex(null);
+    setLoadingMessage("");
+    setLoadingStep(0);
+
+    const timers = runLoadingSequence();
 
     try {
       const res = await fetch("/api/lead-magnet/step-4", {
@@ -140,7 +166,10 @@ export default function LeadMagnetStep4Page() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
     } finally {
+      timers.forEach(clearTimeout);
       setLoading(false);
+      setLoadingMessage("");
+      setLoadingStep(0);
     }
   };
 
@@ -160,6 +189,8 @@ export default function LeadMagnetStep4Page() {
       try {
         setLoading(true);
         setError("");
+        setLoadingStep(1);
+        setLoadingMessage("กำลังสร้าง Next Step แบบกำหนดเอง...");
 
         const res = await fetch("/api/lead-magnet/step-4/custom", {
           method: "POST",
@@ -177,6 +208,9 @@ export default function LeadMagnetStep4Page() {
           }),
         });
 
+        setLoadingStep(2);
+        setLoadingMessage("กำลังเรียบเรียงคำตอบให้นำไปใช้ต่อได้...");
+
         const data = await res.json();
 
         if (!res.ok) {
@@ -185,12 +219,17 @@ export default function LeadMagnetStep4Page() {
           );
         }
 
+        setLoadingStep(3);
+        setLoadingMessage("กำลังบันทึกผลลัพธ์...");
+
         localStorage.setItem("leadMagnetSection5", JSON.stringify(data.section5));
         window.location.href = "/lead-magnet-builder/final";
       } catch (err) {
         setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
       } finally {
         setLoading(false);
+        setLoadingMessage("");
+        setLoadingStep(0);
       }
 
       return;
@@ -221,133 +260,31 @@ export default function LeadMagnetStep4Page() {
           </div>
         )}
 
-        {selectedBigProblem && section4 && (
-          <div className="border rounded-xl p-6 bg-gray-50 mb-8 space-y-4">
-            <h2 className="text-2xl font-semibold">ข้อมูลที่ใช้สร้าง Step 4</h2>
+        <div className={loading ? "opacity-60 pointer-events-none" : ""}>
+          {selectedBigProblem && section4 && (
+            <div className="border rounded-xl p-6 bg-gray-50 mb-8 space-y-4">
+              <h2 className="text-2xl font-semibold">ข้อมูลที่ใช้สร้าง Step 4</h2>
 
-            <div className="text-sm leading-7">
-              <strong>Big Problem:</strong> {selectedBigProblem.title}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>Big Problem:</strong> {selectedBigProblem.title}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>The Gap:</strong> {section4.gapSummary}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>The Gap:</strong> {section4.gapSummary}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>สะพานไปสู่ขั้นตอนถัดไป:</strong> {section4.bridgeToNextStep}
-            </div>
-          </div>
-        )}
-
-        {!hasGenerated && selectedBigProblem && section4 && (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => (window.location.href = "/lead-magnet-builder/step-3")}
-              className="border px-6 py-3 rounded-lg"
-            >
-              กลับไป Step 3
-            </button>
-
-            <button
-              type="button"
-              onClick={() => generateStep4(false)}
-              disabled={loading}
-              className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
-            >
-              {loading ? "กำลังสร้าง Step 4..." : "สร้าง Step 4"}
-            </button>
-          </div>
-        )}
-
-        {hasGenerated && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                เลือก Section 5: The Next Step
-              </h2>
-
-              <div className="grid gap-4">
-                {section5Options.map((option, index) => {
-                  const isSelected = selectedOptionIndex === index;
-
-                  return (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleSelectOption(index)}
-                      className={`text-left border-2 rounded-xl p-6 transition ${
-                        isSelected
-                          ? "border-green-600 bg-green-50 ring-2 ring-green-200"
-                          : "border-gray-300 bg-white hover:border-gray-400"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        <h3 className="text-xl font-semibold">
-                          ข้อ {index + 1}: {option.title}
-                        </h3>
-
-                        {isSelected && (
-                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
-                            ✓
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="space-y-3 text-sm leading-7">
-                        <div>
-                          <strong>ทำไมถึงเหมาะ:</strong>
-                          <div>{option.whyItFits}</div>
-                        </div>
-
-                        <div>
-                          <strong>ผู้ใช้ต้องทำอะไรต่อ:</strong>
-                          <div>{option.whatTheyDoNext}</div>
-                        </div>
-
-                        <div>
-                          <strong>เขาจะได้อะไร:</strong>
-                          <div>{option.whatTheyGet}</div>
-                        </div>
-
-                        <div>
-                          <strong>Promise:</strong>
-                          <div>{option.promise}</div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="text-sm leading-7">
+                <strong>สะพานไปสู่ขั้นตอนถัดไป:</strong> {section4.bridgeToNextStep}
               </div>
             </div>
+          )}
 
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h3 className="text-xl font-semibold mb-3">
-                หรือระบุ Next Step ที่อยากได้เอง
-              </h3>
-
-              <p className="text-sm text-gray-700 mb-3 leading-7">
-                ถ้าตัวเลือกที่ AI สร้างยังไม่ตรง คุณสามารถพิมพ์ทิศทาง Next Step
-                ที่ต้องการเองได้
-              </p>
-
-              <textarea
-                value={customNextStep}
-                onChange={(e) => {
-                  setCustomNextStep(e.target.value);
-                  setSelectedOptionIndex(null);
-                }}
-                className="w-full border p-3 rounded-lg"
-                rows={4}
-                placeholder="เช่น ให้พาไปแอด LINE เพื่อรับ Mock Exam A-Level ภาษาจีน"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-3">
+          {!hasGenerated && selectedBigProblem && section4 && (
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => (window.location.href = "/lead-magnet-builder/step-3")}
@@ -358,21 +295,185 @@ export default function LeadMagnetStep4Page() {
 
               <button
                 type="button"
-                onClick={() => generateStep4(true)}
-                disabled={loading}
-                className="border px-6 py-3 rounded-lg disabled:opacity-60"
-              >
-                {loading ? "กำลังสร้างใหม่..." : "สร้างใหม่"}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleApprove}
+                onClick={() => generateStep4(false)}
                 disabled={loading}
                 className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
               >
-                {loading ? "กำลังบันทึก..." : "ใช้อันนี้และไปหน้าสรุป"}
+                {loading ? "กำลังสร้าง Step 4..." : "สร้าง Step 4"}
               </button>
+            </div>
+          )}
+
+          {hasGenerated && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">
+                  เลือก Section 5: The Next Step
+                </h2>
+
+                <div className="grid gap-4">
+                  {section5Options.map((option, index) => {
+                    const isSelected = selectedOptionIndex === index;
+
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleSelectOption(index)}
+                        className={`text-left border-2 rounded-xl p-6 transition ${
+                          isSelected
+                            ? "border-green-600 bg-green-50 ring-2 ring-green-200"
+                            : "border-gray-300 bg-white hover:border-gray-400"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <h3 className="text-xl font-semibold">
+                            ข้อ {index + 1}: {option.title}
+                          </h3>
+
+                          {isSelected && (
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white text-lg font-bold">
+                              ✓
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-3 text-sm leading-7">
+                          <div>
+                            <strong>ทำไมถึงเหมาะ:</strong>
+                            <div>{option.whyItFits}</div>
+                          </div>
+
+                          <div>
+                            <strong>ผู้ใช้ต้องทำอะไรต่อ:</strong>
+                            <div>{option.whatTheyDoNext}</div>
+                          </div>
+
+                          <div>
+                            <strong>เขาจะได้อะไร:</strong>
+                            <div>{option.whatTheyGet}</div>
+                          </div>
+
+                          <div>
+                            <strong>Promise:</strong>
+                            <div>{option.promise}</div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h3 className="text-xl font-semibold mb-3">
+                  หรือระบุ Next Step ที่อยากได้เอง
+                </h3>
+
+                <p className="text-sm text-gray-700 mb-3 leading-7">
+                  ถ้าตัวเลือกที่ AI สร้างยังไม่ตรง คุณสามารถพิมพ์ทิศทาง Next Step
+                  ที่ต้องการเองได้
+                </p>
+
+                <textarea
+                  value={customNextStep}
+                  onChange={(e) => {
+                    setCustomNextStep(e.target.value);
+                    setSelectedOptionIndex(null);
+                  }}
+                  className="w-full border p-3 rounded-lg"
+                  rows={4}
+                  placeholder="เช่น ให้พาไปแอด LINE เพื่อรับ Mock Exam A-Level ภาษาจีน"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = "/lead-magnet-builder/step-3")}
+                  className="border px-6 py-3 rounded-lg"
+                >
+                  กลับไป Step 3
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => generateStep4(true)}
+                  disabled={loading}
+                  className="border px-6 py-3 rounded-lg disabled:opacity-60"
+                >
+                  {loading ? "กำลังสร้างใหม่..." : "สร้างใหม่"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleApprove}
+                  disabled={loading}
+                  className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
+                >
+                  {loading ? "กำลังบันทึก..." : "ใช้อันนี้และไปหน้าสรุป"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {loading && (
+          <div className="mt-8 border rounded-xl p-6 bg-gray-50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-3 w-3 rounded-full bg-black animate-pulse" />
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                กำลังประมวลผล
+                <span className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </span>
+              </h2>
+            </div>
+
+            <p className="text-sm text-gray-700 mb-4">{loadingMessage}</p>
+
+            <div className="space-y-3 text-sm mt-4">
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 1 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 1 ? "✓" : "○"} อ่านข้อมูลจาก Step ก่อนหน้า
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 2 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 2 ? "✓" : "○"} สร้างทางเลือก Next Step ที่เหมาะ
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 3 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 3 ? "✓" : "○"} เรียบเรียงผลลัพธ์ให้อ่านง่ายและพร้อมเลือก
+              </div>
+            </div>
+
+            <div className="mt-4 h-2 w-full overflow-hidden rounded bg-gray-200">
+              <div
+                className="h-full rounded bg-black transition-all duration-700"
+                style={{
+                  width:
+                    loadingStep === 0
+                      ? "10%"
+                      : loadingStep === 1
+                      ? "33%"
+                      : loadingStep === 2
+                      ? "66%"
+                      : "90%",
+                }}
+              />
             </div>
           </div>
         )}

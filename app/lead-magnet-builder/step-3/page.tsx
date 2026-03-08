@@ -41,6 +41,9 @@ export default function LeadMagnetStep3Page() {
   const [section4, setSection4] = useState<Section4 | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const [error, setError] = useState("");
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -83,9 +86,32 @@ export default function LeadMagnetStep3Page() {
     }
   }, []);
 
+  const runLoadingSequence = () => {
+    const timers = [
+      setTimeout(() => {
+        setLoadingStep(1);
+        setLoadingMessage("กำลังอ่านข้อมูลจาก Step ก่อนหน้า...");
+      }, 0),
+      setTimeout(() => {
+        setLoadingStep(2);
+        setLoadingMessage("กำลังวิเคราะห์สิ่งที่ยังขาดและสร้าง The Gap...");
+      }, 1200),
+      setTimeout(() => {
+        setLoadingStep(3);
+        setLoadingMessage("กำลังเรียบเรียงคำตอบและเชื่อมไปยังขั้นตอนถัดไป...");
+      }, 2800),
+    ];
+
+    return timers;
+  };
+
   const generateStep3 = async (regenerate = false) => {
     setLoading(true);
     setError("");
+    setLoadingMessage("");
+    setLoadingStep(0);
+
+    const timers = runLoadingSequence();
 
     try {
       const res = await fetch("/api/lead-magnet/step-3", {
@@ -115,7 +141,10 @@ export default function LeadMagnetStep3Page() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
     } finally {
+      timers.forEach(clearTimeout);
       setLoading(false);
+      setLoadingMessage("");
+      setLoadingStep(0);
     }
   };
 
@@ -143,77 +172,31 @@ export default function LeadMagnetStep3Page() {
           </div>
         )}
 
-        {selectedBigProblem && section2 && section3 && (
-          <div className="border rounded-xl p-6 bg-gray-50 mb-8 space-y-4">
-            <h2 className="text-2xl font-semibold">ข้อมูลที่ใช้สร้าง Step 3</h2>
+        <div className={loading ? "opacity-60 pointer-events-none" : ""}>
+          {selectedBigProblem && section2 && section3 && (
+            <div className="border rounded-xl p-6 bg-gray-50 mb-8 space-y-4">
+              <h2 className="text-2xl font-semibold">ข้อมูลที่ใช้สร้าง Step 3</h2>
 
-            <div className="text-sm leading-7">
-              <strong>Big Problem:</strong> {selectedBigProblem.title}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>Big Problem:</strong> {selectedBigProblem.title}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>ปัญหาที่กำลังพยายามแก้:</strong> {currentProblem}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>The Shift:</strong> {section2.newBelief}
-            </div>
+              <div className="text-sm leading-7">
+                <strong>The Shift:</strong> {section2.newBelief}
+              </div>
 
-            <div className="text-sm leading-7">
-              <strong>The Proof:</strong> {section3.format}
-            </div>
-          </div>
-        )}
-
-        {!hasGenerated && selectedBigProblem && section2 && section3 && (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => (window.location.href = "/lead-magnet-builder/step-2")}
-              className="border px-6 py-3 rounded-lg"
-            >
-              กลับไป Step 2
-            </button>
-
-            <button
-              type="button"
-              onClick={() => generateStep3(false)}
-              disabled={loading}
-              className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
-            >
-              {loading ? "กำลังสร้าง Step 3..." : "สร้าง Step 3"}
-            </button>
-          </div>
-        )}
-
-        {hasGenerated && section4 && (
-          <div className="space-y-8">
-            <div className="border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">Section 4: The Gap</h2>
-
-              <div className="space-y-4 text-sm leading-7">
-                <div>
-                  <strong>สิ่งที่ยังขาดอยู่:</strong>
-                  <div>{section4.gapSummary}</div>
-                </div>
-
-                <div>
-                  <strong>ชั้นที่ลึกกว่าที่ต้องมี:</strong>
-                  <ol className="list-decimal pl-6">
-                    {section4.deeperLayers.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ol>
-                </div>
-
-                <div>
-                  <strong>สะพานไปสู่ขั้นตอนถัดไป:</strong>
-                  <div>{section4.bridgeToNextStep}</div>
-                </div>
+              <div className="text-sm leading-7">
+                <strong>The Proof:</strong> {section3.format}
               </div>
             </div>
+          )}
 
-            <div className="flex flex-wrap gap-3">
+          {!hasGenerated && selectedBigProblem && section2 && section3 && (
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={() => (window.location.href = "/lead-magnet-builder/step-2")}
@@ -224,20 +207,128 @@ export default function LeadMagnetStep3Page() {
 
               <button
                 type="button"
-                onClick={() => generateStep3(true)}
+                onClick={() => generateStep3(false)}
                 disabled={loading}
-                className="border px-6 py-3 rounded-lg disabled:opacity-60"
+                className="bg-black text-white px-6 py-3 rounded-lg disabled:opacity-60"
               >
-                {loading ? "กำลังสร้างใหม่..." : "สร้างใหม่"}
+                {loading ? "กำลังสร้าง Step 3..." : "สร้าง Step 3"}
               </button>
+            </div>
+          )}
 
-              <button
-                type="button"
-                onClick={handleApprove}
-                className="bg-black text-white px-6 py-3 rounded-lg"
+          {hasGenerated && section4 && (
+            <div className="space-y-8">
+              <div className="border rounded-xl p-6 bg-gray-50">
+                <h2 className="text-2xl font-semibold mb-4">Section 4: The Gap</h2>
+
+                <div className="space-y-4 text-sm leading-7">
+                  <div>
+                    <strong>สิ่งที่ยังขาดอยู่:</strong>
+                    <div>{section4.gapSummary}</div>
+                  </div>
+
+                  <div>
+                    <strong>ชั้นที่ลึกกว่าที่ต้องมี:</strong>
+                    <ol className="list-decimal pl-6">
+                      {section4.deeperLayers.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <div>
+                    <strong>สะพานไปสู่ขั้นตอนถัดไป:</strong>
+                    <div>{section4.bridgeToNextStep}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => (window.location.href = "/lead-magnet-builder/step-2")}
+                  className="border px-6 py-3 rounded-lg"
+                >
+                  กลับไป Step 2
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => generateStep3(true)}
+                  disabled={loading}
+                  className="border px-6 py-3 rounded-lg disabled:opacity-60"
+                >
+                  {loading ? "กำลังสร้างใหม่..." : "สร้างใหม่"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleApprove}
+                  className="bg-black text-white px-6 py-3 rounded-lg"
+                >
+                  โอเค ไป Step ถัดไป
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {loading && (
+          <div className="mt-8 border rounded-xl p-6 bg-gray-50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-3 w-3 rounded-full bg-black animate-pulse" />
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                กำลังประมวลผล
+                <span className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </span>
+              </h2>
+            </div>
+
+            <p className="text-sm text-gray-700 mb-4">{loadingMessage}</p>
+
+            <div className="space-y-3 text-sm mt-4">
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 1 ? "text-black font-medium" : "text-gray-400"
+                }`}
               >
-                โอเค ไป Step ถัดไป
-              </button>
+                {loadingStep >= 1 ? "✓" : "○"} อ่านข้อมูลจาก Step ก่อนหน้า
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 2 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 2 ? "✓" : "○"} วิเคราะห์และสร้าง The Gap
+              </div>
+
+              <div
+                className={`flex items-center gap-2 ${
+                  loadingStep >= 3 ? "text-black font-medium" : "text-gray-400"
+                }`}
+              >
+                {loadingStep >= 3 ? "✓" : "○"} เรียบเรียงผลลัพธ์และเชื่อมไป Step ถัดไป
+              </div>
+            </div>
+
+            <div className="mt-4 h-2 w-full overflow-hidden rounded bg-gray-200">
+              <div
+                className="h-full rounded bg-black transition-all duration-700"
+                style={{
+                  width:
+                    loadingStep === 0
+                      ? "10%"
+                      : loadingStep === 1
+                      ? "33%"
+                      : loadingStep === 2
+                      ? "66%"
+                      : "90%",
+                }}
+              />
             </div>
           </div>
         )}
