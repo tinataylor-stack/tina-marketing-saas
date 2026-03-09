@@ -349,7 +349,7 @@ export default function LeadMagnetStep2Page() {
                       ? "33%"
                       : loadingStep === 2
                       ? "66%"
-                      : "95%",
+                      : "90%",
                 }}
               />
             </div>
