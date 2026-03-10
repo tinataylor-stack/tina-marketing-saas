@@ -99,7 +99,7 @@ export default function HomePage() {
             className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
             <h2 className="text-2xl font-semibold mb-2">
-              Lead Magnet Content Tool
+              Lead Magnet Content
             </h2>
             <p className="text-gray-700">
               เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
