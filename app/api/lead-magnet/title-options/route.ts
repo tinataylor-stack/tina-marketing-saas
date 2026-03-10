@@ -13,7 +13,6 @@ type RequestBody = {
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as RequestBody;
-
     const { leadMagnetDraft, currentProblem } = body;
 
     if (!leadMagnetDraft) {
@@ -24,46 +23,61 @@ export async function POST(req: Request) {
     }
 
     const systemPrompt = `
-You are a lead magnet copywriting expert.
+You are a Thai lead magnet naming strategist.
 
-Your job is to generate strong title options for a lead magnet.
+Your job is to generate title options for the LEAD MAGNET itself.
+
+Important:
+- You are naming the free lead magnet resource
+- You are NOT naming the paid next step, course, workshop, service, or offer
+- If the draft mentions a next step, treat it as background context only
+- Do NOT generate titles that sound like course names, workshop names, or paid program names
 
 Rules:
 - Write in Thai
-- Titles should be clear and benefit-driven
+- Titles should be clear, benefit-driven, and easy to understand
+- Titles should feel suitable for a free lead magnet such as a PDF guide, checklist, mini guide, cheat sheet, workbook, or article
 - Avoid vague titles
+- Avoid titles that sound like product names for the next offer
+- Keep them concise but meaningful
 - Make them attractive for business owners
-- Keep them concise but powerful
-- Each title should feel like a real lead magnet title
+- Return title options only
 
 Return ONLY valid JSON.
 
 JSON format:
-
 {
-"titleOptions": [
-"title1",
-"title2",
-"title3",
-"title4",
-"title5"
-]
+  "titleOptions": [
+    "title1",
+    "title2",
+    "title3",
+    "title4",
+    "title5"
+  ]
 }
 `.trim();
 
     const userPrompt = `
-Create title options for the following lead magnet.
+สร้าง Title Options สำหรับ LEAD MAGNET ด้านล่าง
 
 Lead Magnet Draft:
 ${leadMagnetDraft}
 
 ${currentProblem ? `Problem the customer is trying to solve: ${currentProblem}` : ""}
 
-Instructions:
+คำสั่งสำคัญ:
+- ตั้งชื่อให้ "lead magnet" เท่านั้น
+- ห้ามตั้งชื่อให้ next step offer
+- ห้ามตั้งชื่อให้คอร์ส เวิร์กช็อป โปรแกรม หรือข้อเสนอขาย
+- ถ้าใน draft มี section ขั้นตอนถัดไป ให้มองส่วนนั้นเป็นแค่บริบท ไม่ใช่สิ่งที่ต้องตั้งชื่อ
+- ชื่อต้องสะท้อนเนื้อหาของ free resource ที่คนจะได้รับก่อน
 
-- Generate 5 strong title options
-- Each title should focus on the main transformation
-- Titles should feel suitable for a PDF guide, article, or checklist
+แนวทาง:
+- Generate 5 title options
+- แต่ละชื่อควรสะท้อนประโยชน์หลักหรือ transformation ของ lead magnet
+- ชื่อควรเหมาะกับ resource ฟรี เช่น PDF guide, checklist, mini guide, workbook, article
+- หลีกเลี่ยงชื่อที่ฟังเหมือนชื่อคอร์สหรือชื่อโปรแกรม
+- หลีกเลี่ยงคำที่ชวนให้รู้สึกว่าเป็น offer แบบเสียเงิน
 `.trim();
 
     const response = await openai.responses.create({
