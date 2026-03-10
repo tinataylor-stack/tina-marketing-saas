@@ -66,14 +66,15 @@ export default function HomePage() {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold">AI Marketing Tools</h1>
           <p className="text-lg text-gray-700">
-            เครื่องมือช่วยวิเคราะห์ลูกค้า และออกแบบ Lead Magnet สำหรับธุรกิจ
+            เครื่องมือช่วยวิเคราะห์ลูกค้า ออกแบบ Lead Magnet
+            และสร้างเนื้อหาทางการตลาดด้วย AI
           </p>
         </div>
 
-        <div className="grid gap-6">
+        <div className="space-y-6">
           <a
             href="/avatar-analyzer"
-            className="border rounded-xl p-6 hover:bg-gray-50 transition"
+            className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
             <h2 className="text-2xl font-semibold mb-2">Avatar Analyzer</h2>
             <p className="text-gray-700">
@@ -84,12 +85,25 @@ export default function HomePage() {
 
           <a
             href="/lead-magnet-builder"
-            className="border rounded-xl p-6 hover:bg-gray-50 transition"
+            className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
             <h2 className="text-2xl font-semibold mb-2">Lead Magnet Builder</h2>
             <p className="text-gray-700">
               สร้างโครง Lead Magnet แบบเป็นขั้นตอน ตั้งแต่ Big Problem
               ไปจนถึง Draft พร้อมใช้
+            </p>
+          </a>
+
+          <a
+            href="/lead-magnet-content"
+            className="block border rounded-xl p-6 hover:bg-gray-50 transition"
+          >
+            <h2 className="text-2xl font-semibold mb-2">
+              Lead Magnet Content Tool
+            </h2>
+            <p className="text-gray-700">
+              เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
+              PDF Guide Checklist Workbook หรือ Email Course
             </p>
           </a>
         </div>

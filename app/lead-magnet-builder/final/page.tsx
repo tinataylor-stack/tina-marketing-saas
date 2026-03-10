@@ -127,6 +127,7 @@ export default function LeadMagnetFinalPage() {
     const savedSection3 = localStorage.getItem("leadMagnetSection3");
     const savedSection4 = localStorage.getItem("leadMagnetSection4");
     const savedSection5 = localStorage.getItem("leadMagnetSection5");
+    const savedDraft = localStorage.getItem("leadMagnetDraft");
 
     if (
       !savedStructured ||
@@ -142,6 +143,11 @@ export default function LeadMagnetFinalPage() {
     }
 
     setCurrentProblem(savedProblem);
+
+    if (savedDraft) {
+      setLeadMagnetDraft(savedDraft);
+      setHasAttemptedDraft(true);
+    }
 
     try {
       setStructuredAvatar(JSON.parse(savedStructured));
@@ -230,7 +236,9 @@ export default function LeadMagnetFinalPage() {
         throw new Error(data.error || "เกิดข้อผิดพลาดในการสร้าง Final Draft");
       }
 
-      setLeadMagnetDraft(data.leadMagnetDraft || "");
+      const finalDraft = data.leadMagnetDraft || "";
+      setLeadMagnetDraft(finalDraft);
+      localStorage.setItem("leadMagnetDraft", finalDraft);
     } catch (err) {
       setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
     } finally {
@@ -686,16 +694,29 @@ export default function LeadMagnetFinalPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  (window.location.href = "/lead-magnet-builder/step-4")
-                }
-                className="border px-6 py-3 rounded-lg"
-              >
-                กลับไป Step 4
-              </button>
-            </div>
+  <button
+    type="button"
+    onClick={() =>
+      (window.location.href = "/lead-magnet-builder/step-4")
+    }
+    className="border px-6 py-3 rounded-lg"
+  >
+    กลับไป Step 4
+  </button>
+
+  {leadMagnetDraft && (
+    <button
+      type="button"
+      onClick={() => {
+        localStorage.setItem("leadMagnetDraft", leadMagnetDraft);
+        window.location.href = "/lead-magnet-content";
+      }}
+      className="border px-6 py-3 rounded-lg bg-black text-white"
+    >
+      ไปสร้างเนื้อหา Lead Magnet
+    </button>
+  )}
+</div>
           </div>
         </div>
 
