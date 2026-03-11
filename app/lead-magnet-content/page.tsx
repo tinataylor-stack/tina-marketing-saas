@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 type StructuredAvatar = {
   business?: string;
@@ -382,8 +383,9 @@ export default function LeadMagnetContentPage() {
 
   if (!hasCheckedStorage) {
     return (
-      <main className="min-h-screen bg-white text-black px-6 py-10">
-        <div className="max-w-5xl mx-auto">
+      <main className="min-h-screen bg-white text-black">
+        <Navbar />
+        <div className="max-w-5xl mx-auto px-6 py-10">
           <h1 className="text-3xl font-bold mb-4">Lead Magnet Content Tool</h1>
           <p className="text-gray-600">กำลังโหลดข้อมูล...</p>
         </div>
@@ -392,8 +394,10 @@ export default function LeadMagnetContentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-black px-6 py-10">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <main className="min-h-screen bg-white text-black">
+      <Navbar />
+
+      <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Lead Magnet Content Tool</h1>
           <p className="text-gray-600 mt-2">

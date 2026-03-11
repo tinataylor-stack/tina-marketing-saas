@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 export default function LeadMagnetBuilderPage() {
   const [hasAccess, setHasAccess] = useState(false);
@@ -57,8 +58,10 @@ export default function LeadMagnetBuilderPage() {
   if (!hasAccess) return null;
 
   return (
-    <main className="min-h-screen bg-white text-black p-10">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-white text-black">
+      <Navbar />
+
+      <div className="max-w-4xl mx-auto px-6 py-10">
         <h1 className="text-4xl font-bold mb-3">Lead Magnet Builder</h1>
         <p className="text-lg mb-8">
           ใช้ Avatar ที่วิเคราะห์ไว้แล้ว แล้วระบุปัญหาที่ลูกค้ากำลังพยายามแก้

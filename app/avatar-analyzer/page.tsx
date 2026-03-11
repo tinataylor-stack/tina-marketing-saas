@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 type FormData = {
   business: string;
@@ -172,8 +173,10 @@ export default function AvatarAnalyzerPage() {
   if (!hasAccess) return null;
 
   return (
-    <main className="min-h-screen bg-white text-black p-10">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-white text-black">
+      <Navbar />
+
+      <div className="max-w-4xl mx-auto px-6 py-10">
         <h1 className="text-4xl font-bold mb-3">Avatar Analyzer</h1>
         <p className="text-lg mb-8">
           เครื่องมือวิเคราะห์ Customer Avatar เชิงกลยุทธ์
@@ -267,7 +270,9 @@ export default function AvatarAnalyzerPage() {
 
           {draftResult && (
             <div className="mt-10 max-w-4xl border rounded-xl p-6 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4">Draft Avatar Analysis</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                Draft Avatar Analysis
+              </h2>
 
               <div className="whitespace-pre-wrap text-sm leading-7">
                 {draftResult}
@@ -298,21 +303,13 @@ export default function AvatarAnalyzerPage() {
                 >
                   แก้ข้อมูลแล้ววิเคราะห์ใหม่
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => (window.location.href = "/")}
-                  className="border px-6 py-3 rounded-lg"
-                >
-                  กลับหน้าแรก
-                </button>
               </div>
 
               {successMessage && (
-  <div className="w-full mt-4 border border-green-300 bg-green-50 text-green-700 rounded-lg p-4">
-    {successMessage}
-  </div>
-)}
+                <div className="w-full mt-4 border border-green-300 bg-green-50 text-green-700 rounded-lg p-4">
+                  {successMessage}
+                </div>
+              )}
             </div>
           )}
 
