@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
 
 export default function HomePage() {
   const [password, setPassword] = useState("");
@@ -61,8 +62,10 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-black p-10">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <main className="min-h-screen bg-white text-black">
+      <Navbar />
+
+      <div className="max-w-3xl mx-auto px-6 py-10 space-y-10">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold">AI Marketing Tools</h1>
           <p className="text-lg text-gray-700">

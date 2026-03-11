@@ -33,6 +33,7 @@ export default function AvatarAnalyzerPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const savedAccess = localStorage.getItem("appAccessGranted");
@@ -79,6 +80,7 @@ export default function AvatarAnalyzerPage() {
     setSuccessMessage("");
     setLoadingMessage("");
     setLoadingStep(0);
+    setIsSaved(false);
 
     if (!regenerate) {
       setDraftResult("");
@@ -145,6 +147,7 @@ export default function AvatarAnalyzerPage() {
     setIsEditing(true);
     setError("");
     setSuccessMessage("");
+    setIsSaved(false);
   };
 
   const handleSaveAvatar = () => {
@@ -168,6 +171,7 @@ export default function AvatarAnalyzerPage() {
 
     setError("");
     setSuccessMessage("บันทึก Avatar เรียบร้อยแล้ว");
+    setIsSaved(true);
   };
 
   if (!hasAccess) return null;
@@ -279,30 +283,52 @@ export default function AvatarAnalyzerPage() {
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={handleSaveAvatar}
-                  className="bg-black text-white px-6 py-3 rounded-lg"
-                >
-                  บันทึก Avatar นี้
-                </button>
+                {!isSaved ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleSaveAvatar}
+                      className="bg-black text-white px-6 py-3 rounded-lg"
+                    >
+                      บันทึก Avatar นี้
+                    </button>
 
-                <button
-                  type="button"
-                  onClick={handleRegenerate}
-                  disabled={loading}
-                  className="border px-6 py-3 rounded-lg disabled:opacity-60"
-                >
-                  {loading ? "กำลังสร้างใหม่..." : "วิเคราะห์ใหม่"}
-                </button>
+                    <button
+                      type="button"
+                      onClick={handleRegenerate}
+                      disabled={loading}
+                      className="border px-6 py-3 rounded-lg disabled:opacity-60"
+                    >
+                      {loading ? "กำลังสร้างใหม่..." : "วิเคราะห์ใหม่"}
+                    </button>
 
-                <button
-                  type="button"
-                  onClick={handleEditAgain}
-                  className="border px-6 py-3 rounded-lg"
-                >
-                  แก้ข้อมูลแล้ววิเคราะห์ใหม่
-                </button>
+                    <button
+                      type="button"
+                      onClick={handleEditAgain}
+                      className="border px-6 py-3 rounded-lg"
+                    >
+                      แก้ข้อมูลแล้ววิเคราะห์ใหม่
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => (window.location.href = "/lead-magnet-builder")}
+                      className="bg-black text-white px-6 py-3 rounded-lg"
+                    >
+                      ไปสร้าง Lead Magnet
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => (window.location.href = "/")}
+                      className="border px-6 py-3 rounded-lg"
+                    >
+                      กลับหน้าแรก
+                    </button>
+                  </>
+                )}
               </div>
 
               {successMessage && (
