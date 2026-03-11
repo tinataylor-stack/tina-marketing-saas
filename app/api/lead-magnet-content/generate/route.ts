@@ -142,13 +142,32 @@ Approved next-step strategy:
 ${JSON.stringify(section5 ?? {}, null, 2)}
 
 Important ending instruction:
-- The lead magnet must include a final section called "Next Step" or the Thai equivalent.
-- Use the approved next-step strategy above as the basis for that final section.
-- The final section should reflect:
-  - what they should do next
-  - why that next step fits
-  - what they get
-  - the promise or outcome
+
+The lead magnet must end with a natural "Next Step" section.
+
+However, do NOT present this section as bullet points or subheadings.
+
+Instead:
+
+• Write it as a smooth narrative paragraph that flows naturally from the previous section.
+• It should feel like the natural continuation of the teaching.
+• The reader should feel guided forward, not pitched to.
+
+The ending should naturally incorporate:
+
+- what they should do next
+- why that step makes sense now
+- what they will gain from it
+- the outcome or promise
+
+But these elements must be woven into the text organically.
+
+Do NOT structure it like this:
+- bullet lists
+- subheadings
+- checklist items
+
+Write it like a short persuasive closing paragraph that leads the reader into the next step.
 - Keep this section helpful and natural, not like a hard sales pitch.
 - Do not end abruptly without this section.
 
