@@ -9,10 +9,6 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6 text-sm">
-          <Link href="/" className="text-gray-700 hover:text-black">
-            หน้าแรก
-          </Link>
-
           <Link
             href="/avatar-analyzer"
             className="text-gray-700 hover:text-black"
