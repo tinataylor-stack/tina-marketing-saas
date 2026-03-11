@@ -11,6 +11,14 @@ type StructuredAvatar = {
   [key: string]: unknown;
 };
 
+type Section5 = {
+  title?: string;
+  whyItFits?: string;
+  whatTheyDoNext?: string;
+  whatTheyGet?: string;
+  promise?: string;
+};
+
 type LeadMagnetFormat =
   | "article"
   | "pdf-guide"
@@ -89,6 +97,8 @@ export default function LeadMagnetContentPage() {
   const [confirmedStructuredAvatar, setConfirmedStructuredAvatar] =
     useState<StructuredAvatar | null>(null);
   const [currentProblem, setCurrentProblem] = useState("");
+  const [section5, setSection5] = useState<Section5 | null>(null);
+
   const [selectedFormat, setSelectedFormat] =
     useState<LeadMagnetFormat | null>(null);
   const [settings, setSettings] = useState<ContentSettings>({});
@@ -127,6 +137,7 @@ export default function LeadMagnetContentPage() {
         localStorage.getItem("rewrittenLeadMagnetContent") || "";
       const savedStructuredAvatarRaw =
         localStorage.getItem("confirmedStructuredAvatar");
+      const savedSection5Raw = localStorage.getItem("leadMagnetSection5");
 
       let parsedStructuredAvatar: StructuredAvatar | null = null;
       if (savedStructuredAvatarRaw) {
@@ -134,6 +145,15 @@ export default function LeadMagnetContentPage() {
           parsedStructuredAvatar = JSON.parse(savedStructuredAvatarRaw);
         } catch (error) {
           console.error("Failed to parse confirmedStructuredAvatar:", error);
+        }
+      }
+
+      let parsedSection5: Section5 | null = null;
+      if (savedSection5Raw) {
+        try {
+          parsedSection5 = JSON.parse(savedSection5Raw);
+        } catch (error) {
+          console.error("Failed to parse leadMagnetSection5:", error);
         }
       }
 
@@ -150,6 +170,7 @@ export default function LeadMagnetContentPage() {
       setConfirmedAvatarAnalysis(savedAvatarAnalysis);
       setConfirmedStructuredAvatar(parsedStructuredAvatar);
       setCurrentProblem(savedCurrentProblem);
+      setSection5(parsedSection5);
       setSettings(parsedSettings);
       setGeneratedContent(savedGeneratedContent);
       setRewrittenContent(savedRewrittenContent);
@@ -260,6 +281,7 @@ export default function LeadMagnetContentPage() {
           currentProblem,
           selectedFormat,
           settings,
+          section5,
         }),
       });
 
@@ -346,9 +368,9 @@ export default function LeadMagnetContentPage() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopyMessage("Copy เรียบร้อยแล้ว");
+      setCopyMessage("คัดลอกเรียบร้อยแล้ว");
     } catch {
-      setCopyMessage("ไม่สามารถ Copy ได้");
+      setCopyMessage("ไม่สามารถคัดลอกได้");
     }
   };
 
@@ -743,7 +765,7 @@ export default function LeadMagnetContentPage() {
                   onClick={() => copyToClipboard(generatedContent)}
                   className="border px-4 py-2 rounded-lg"
                 >
-                  Copy
+                  คัดลอก
                 </button>
 
                 <button
@@ -825,7 +847,7 @@ export default function LeadMagnetContentPage() {
                     onClick={() => copyToClipboard(rewrittenContent)}
                     className="border px-4 py-2 rounded-lg"
                   >
-                    Copy Rewrite
+                    คัดลอก Rewrite
                   </button>
 
                   <button

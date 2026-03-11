@@ -17,6 +17,14 @@ type ContentSettings = {
   videoLength?: "short" | "long";
 };
 
+type Section5 = {
+  title?: string;
+  whyItFits?: string;
+  whatTheyDoNext?: string;
+  whatTheyGet?: string;
+  promise?: string;
+};
+
 type RequestBody = {
   leadMagnetDraft: string;
   avatarAnalysis: string;
@@ -30,38 +38,42 @@ type RequestBody = {
     | "email-course"
     | "video-script";
   settings?: ContentSettings;
+  section5?: Section5 | null;
 };
 
 const formatInstructions: Record<RequestBody["selectedFormat"], string> = {
   article: `
 Write a complete article-style lead magnet.
 Use a strong headline, intro, useful sections, and a clear closing.
-Make it practical, readable, and specific.
+End with a final next-step section that naturally guides the reader forward.
 `,
   "pdf-guide": `
 Write a complete PDF Guide style lead magnet.
 Use a polished structure with a title, intro, section headings, and clear teaching.
-Make it feel useful and premium.
+End with a final next-step section that naturally guides the reader forward.
 `,
   checklist: `
 Write a complete Checklist style lead magnet.
 Keep it practical, clear, and easy to scan.
 Use checklist items and short explanations when helpful.
+End with a final next-step section after the checklist.
 `,
   workbook: `
 Write a complete Workbook style lead magnet.
 Include short teaching, reflection prompts, and exercises.
-Make it interactive and practical.
+End with a final next-step section that tells the reader what to do after finishing the workbook.
 `,
   "email-course": `
 Write a complete Email Course lead magnet.
 Break it into multiple emails with subject lines and body content.
 Each email should build naturally from the previous one.
+In the final email, include a clear next-step section.
 `,
   "video-script": `
 Write a complete Video Script lead magnet.
 Make it natural to speak aloud.
 Use clear sections, smooth transitions, and teaching-friendly wording.
+End with a clear spoken next-step section.
 `,
 };
 
@@ -76,6 +88,7 @@ export async function POST(req: Request) {
       currentProblem,
       selectedFormat,
       settings,
+      section5,
     } = body;
 
     if (!leadMagnetDraft || !avatarAnalysis || !selectedFormat) {
@@ -99,6 +112,9 @@ Rules:
 6. Use clear headings and logical structure.
 7. Avoid fluff and repetition.
 8. Make the content feel specific to the target customer.
+9. ALWAYS include a final next-step section.
+10. The final next-step section must be based on the approved next-step strategy when provided.
+11. The ending should feel natural, helpful, and aligned with the lead magnet, not abrupt.
 `;
 
     const userPrompt = `
@@ -121,6 +137,20 @@ ${leadMagnetDraft}
 
 Generation settings:
 ${JSON.stringify(settings ?? {}, null, 2)}
+
+Approved next-step strategy:
+${JSON.stringify(section5 ?? {}, null, 2)}
+
+Important ending instruction:
+- The lead magnet must include a final section called "Next Step" or the Thai equivalent.
+- Use the approved next-step strategy above as the basis for that final section.
+- The final section should reflect:
+  - what they should do next
+  - why that next step fits
+  - what they get
+  - the promise or outcome
+- Keep this section helpful and natural, not like a hard sales pitch.
+- Do not end abruptly without this section.
 
 Return only the finished lead magnet content.
 `;
