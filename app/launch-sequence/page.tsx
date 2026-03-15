@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
-export default function LeadMagnetBuilderPage() {
+export default function LaunchSequencePage() {
   const [hasAccess, setHasAccess] = useState(false);
   const [hasAvatar, setHasAvatar] = useState(false);
   const [avatarSummary, setAvatarSummary] = useState("");
@@ -19,9 +19,10 @@ export default function LeadMagnetBuilderPage() {
 
     setHasAccess(true);
 
+    const savedAnalysis = localStorage.getItem("confirmedAvatarAnalysis");
     const savedStructured = localStorage.getItem("confirmedStructuredAvatar");
 
-    if (!savedStructured) {
+    if (!savedAnalysis || !savedStructured) {
       setError("ยังไม่พบ Avatar ที่ยืนยันแล้ว กรุณาไปวิเคราะห์ Avatar ก่อน");
       return;
     }
@@ -43,10 +44,9 @@ export default function LeadMagnetBuilderPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-3">Lead Magnet</h1>
+          <h1 className="text-4xl font-bold mb-3">Launch</h1>
           <p className="text-lg text-gray-700">
-            แยกส่วนระหว่างการวางกลยุทธ์ Lead Magnet
-            และการเปลี่ยนกลยุทธ์นั้นให้เป็นเนื้อหาจริง
+            แยกการทำงานออกเป็น 3 ส่วน เพื่อให้ภาพรวมของ Launch ชัดและไม่รกเกินไป
           </p>
         </div>
 
@@ -65,30 +65,39 @@ export default function LeadMagnetBuilderPage() {
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           <a
-            href="/lead-magnet-builder/strategy"
+            href="/launch-sequence/step-1"
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >
             <h2 className="text-2xl font-semibold mb-3">
-              สร้างกลยุทธ์ Lead Magnet
+              Step 1 : วางกลยุทธ์ Launch สินค้า
             </h2>
             <p className="text-sm leading-7 text-gray-700">
-              วางโครง Lead Magnet แบบเป็นขั้นตอน ตั้งแต่ Big Problem
-              ไปจนถึง Draft เชิงกลยุทธ์
+              วางแกนกลยุทธ์ของการเปิดตัวให้ชัด ทั้ง Offer, Angle,
+              Transformation และเหตุผลที่คนควรสนใจ
             </p>
           </a>
 
           <a
-            href="/lead-magnet-content"
+            href="/launch-sequence/prelaunch"
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >
-            <h2 className="text-2xl font-semibold mb-3">
-              สร้างเนื้อหา Lead Magnet
-            </h2>
+            <h2 className="text-2xl font-semibold mb-3">Step 2 : Prelaunch</h2>
             <p className="text-sm leading-7 text-gray-700">
-              เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
-              PDF Guide Checklist Workbook หรือ Email Course
+              รวมเครื่องมือสำหรับวางโครง Prelaunch
+              และสร้างเนื้อหา Prelaunch ในลำดับถัดไป
+            </p>
+          </a>
+
+          <a
+            href="/launch-sequence/launch"
+            className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
+          >
+            <h2 className="text-2xl font-semibold mb-3">Step 3 : Launch</h2>
+            <p className="text-sm leading-7 text-gray-700">
+              รวมเครื่องมือสำหรับ Launch Plan
+              และ Final Blueprint ในช่วงเปิดขาย
             </p>
           </a>
         </div>
@@ -96,7 +105,7 @@ export default function LeadMagnetBuilderPage() {
         <div className="flex flex-wrap gap-3">
           <a
             href="/"
-            className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
+            className="bg-black text-white px-6 py-3 rounded-lg"
           >
             กลับหน้าแรก
           </a>

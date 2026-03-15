@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 
-export default function LeadMagnetBuilderPage() {
+export default function PrelaunchPage() {
   const [hasAccess, setHasAccess] = useState(false);
   const [hasAvatar, setHasAvatar] = useState(false);
   const [avatarSummary, setAvatarSummary] = useState("");
@@ -43,10 +43,9 @@ export default function LeadMagnetBuilderPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-3">Lead Magnet</h1>
+          <h1 className="text-4xl font-bold mb-3">Step 2 : Prelaunch</h1>
           <p className="text-lg text-gray-700">
-            แยกส่วนระหว่างการวางกลยุทธ์ Lead Magnet
-            และการเปลี่ยนกลยุทธ์นั้นให้เป็นเนื้อหาจริง
+            รวมเครื่องมือสำหรับการวางโครงและการสร้างเนื้อหาในช่วง Prelaunch
           </p>
         </div>
 
@@ -67,38 +66,36 @@ export default function LeadMagnetBuilderPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <a
-            href="/lead-magnet-builder/strategy"
+            href="/launch-sequence/step-2"
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >
             <h2 className="text-2xl font-semibold mb-3">
-              สร้างกลยุทธ์ Lead Magnet
+              2.1 สร้างกลยุธ์ Prelaunch
             </h2>
             <p className="text-sm leading-7 text-gray-700">
-              วางโครง Lead Magnet แบบเป็นขั้นตอน ตั้งแต่ Big Problem
-              ไปจนถึง Draft เชิงกลยุทธ์
+              วาง 3-part PLC sequence เพื่อเชื่อมจาก curiosity ไปสู่ความพร้อมก่อนเปิดขาย
             </p>
           </a>
 
           <a
-            href="/lead-magnet-content"
+            href="/launch-sequence/prelaunch-content"
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >
             <h2 className="text-2xl font-semibold mb-3">
-              สร้างเนื้อหา Lead Magnet
+              2.2 สร้างเนื้อหา Prelaunch
             </h2>
             <p className="text-sm leading-7 text-gray-700">
-              เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
-              PDF Guide Checklist Workbook หรือ Email Course
+              เปลี่ยนโครง PLC ให้กลายเป็นเนื้อหาจริงสำหรับ PLC 1, PLC 2 และ PLC 3
             </p>
           </a>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <a
-            href="/"
+            href="/launch-sequence"
             className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
           >
-            กลับหน้าแรก
+            ย้อนกลับ
           </a>
         </div>
       </div>

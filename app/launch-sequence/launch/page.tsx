@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import AvatarEntryLink from "../../components/AvatarEntryLink";
+import Navbar from "../../components/Navbar";
 
-export default function LeadMagnetBuilderPage() {
+export default function LaunchPage() {
   const [hasAccess, setHasAccess] = useState(false);
   const [hasAvatar, setHasAvatar] = useState(false);
   const [avatarSummary, setAvatarSummary] = useState("");
@@ -43,10 +44,9 @@ export default function LeadMagnetBuilderPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-3">Lead Magnet</h1>
+          <h1 className="text-4xl font-bold mb-3">Launch</h1>
           <p className="text-lg text-gray-700">
-            แยกส่วนระหว่างการวางกลยุทธ์ Lead Magnet
-            และการเปลี่ยนกลยุทธ์นั้นให้เป็นเนื้อหาจริง
+            รวมเครื่องมือสำหรับจัดช่วงเปิดขายและสรุปแผน Launch ให้พร้อมใช้งาน
           </p>
         </div>
 
@@ -65,41 +65,30 @@ export default function LeadMagnetBuilderPage() {
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <a
-            href="/lead-magnet-builder/strategy"
-            className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
-          >
-            <h2 className="text-2xl font-semibold mb-3">
-              สร้างกลยุทธ์ Lead Magnet
-            </h2>
-            <p className="text-sm leading-7 text-gray-700">
-              วางโครง Lead Magnet แบบเป็นขั้นตอน ตั้งแต่ Big Problem
-              ไปจนถึง Draft เชิงกลยุทธ์
-            </p>
-          </a>
-
-          <a
-            href="/lead-magnet-content"
-            className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
-          >
-            <h2 className="text-2xl font-semibold mb-3">
-              สร้างเนื้อหา Lead Magnet
-            </h2>
-            <p className="text-sm leading-7 text-gray-700">
-              เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
-              PDF Guide Checklist Workbook หรือ Email Course
-            </p>
-          </a>
+        <div className="border rounded-xl p-6 bg-white">
+          <h2 className="text-2xl font-semibold mb-3">
+            Launch Plan and Final Blueprint
+          </h2>
+          <p className="text-sm leading-7 text-gray-700">
+            เชื่อมจากช่วง Prelaunch ไปสู่ช่วงเปิดขาย พร้อมสรุปแผน Launch
+            และ Final Blueprint ในภาพรวมเดียว
+          </p>
+          <div className="pt-4">
+            <span className="inline-block border px-3 py-1 rounded-full text-sm text-gray-600">
+              Coming Soon
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <a
-            href="/"
+            href="/launch-sequence"
             className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
           >
-            กลับหน้าแรก
+            ย้อนกลับ
           </a>
+
+          <AvatarEntryLink className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition" />
         </div>
       </div>
     </main>

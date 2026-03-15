@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AvatarEntryLink from "./AvatarEntryLink";
 
 export default function Navbar() {
   return (
@@ -10,25 +11,27 @@ export default function Navbar() {
 
         <div className="flex items-center gap-6 text-sm">
           <Link
-            href="/avatar-analyzer"
+            href="/content-generator"
             className="text-gray-700 hover:text-black"
           >
-            Avatar Analyzer
+            Content Generator
           </Link>
 
           <Link
             href="/lead-magnet-builder"
             className="text-gray-700 hover:text-black"
           >
-            Lead Magnet Builder
+            Lead Magnet
           </Link>
 
           <Link
-            href="/lead-magnet-content"
+            href="/launch-sequence"
             className="text-gray-700 hover:text-black"
           >
-            Content Tool
+            Launch
           </Link>
+
+          <AvatarEntryLink className="bg-black text-white px-4 py-2 rounded-lg" />
         </div>
       </div>
     </div>

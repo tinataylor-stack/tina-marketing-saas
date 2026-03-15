@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
+import AvatarEntryLink from "./components/AvatarEntryLink";
 
 export default function HomePage() {
   const [password, setPassword] = useState("");
@@ -69,20 +70,24 @@ export default function HomePage() {
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold">AI Marketing Tools</h1>
           <p className="text-lg text-gray-700">
-            เครื่องมือช่วยวิเคราะห์ลูกค้า ออกแบบ Lead Magnet
-            และสร้างเนื้อหาทางการตลาดด้วย AI
+            เริ่มจาก Avatar ก่อน แล้วค่อยไปต่อในแต่ละชุดเครื่องมือ
+            เพื่อให้ทุกหน้าใช้ข้อมูลเดียวกันได้อย่างเป็นระบบ
           </p>
+        </div>
+
+        <div className="flex justify-center">
+          <AvatarEntryLink className="bg-black text-white px-6 py-3 rounded-lg" />
         </div>
 
         <div className="space-y-6">
           <a
-            href="/avatar-analyzer"
+            href="/content-generator"
             className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
-            <h2 className="text-2xl font-semibold mb-2">Avatar Analyzer</h2>
+            <h2 className="text-2xl font-semibold mb-2">Content Generator</h2>
             <p className="text-gray-700">
-              วิเคราะห์ Customer Avatar เชิงกลยุทธ์ เพื่อเข้าใจปัญหา ความต้องการ
-              และโอกาสของลูกค้า
+              พื้นที่สำหรับเครื่องมือสร้างคอนเทนต์ในอนาคต
+              โดยจะแยกจากหน้ากลยุทธ์อย่างชัดเจน
             </p>
           </a>
 
@@ -90,23 +95,21 @@ export default function HomePage() {
             href="/lead-magnet-builder"
             className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
-            <h2 className="text-2xl font-semibold mb-2">Lead Magnet Builder</h2>
+            <h2 className="text-2xl font-semibold mb-2">Lead Magnet</h2>
             <p className="text-gray-700">
-              สร้างโครง Lead Magnet แบบเป็นขั้นตอน ตั้งแต่ Big Problem
-              ไปจนถึง Draft พร้อมใช้
+              รวมเครื่องมือสำหรับวางกลยุทธ์ Lead Magnet
+              และเปลี่ยนกลยุทธ์นั้นให้กลายเป็นเนื้อหาจริง
             </p>
           </a>
 
           <a
-            href="/lead-magnet-content"
+            href="/launch-sequence"
             className="block border rounded-xl p-6 hover:bg-gray-50 transition"
           >
-            <h2 className="text-2xl font-semibold mb-2">
-              Lead Magnet Content
-            </h2>
+            <h2 className="text-2xl font-semibold mb-2">Launch</h2>
             <p className="text-gray-700">
-              เปลี่ยน Lead Magnet Draft ให้กลายเป็นเนื้อหาจริง เช่น บทความ
-              PDF Guide Checklist Workbook หรือ Email Course
+              รวมเครื่องมือสำหรับ วางกลยุทธ์ Launch สินค้า, สร้าง Prelaunch,
+              PLC Content และ Launch Plan
             </p>
           </a>
         </div>
