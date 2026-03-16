@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import type {
   ContentPlanner30Input,
@@ -24,16 +24,38 @@ const PLATFORM_OPTIONS: Array<{
     description: "เหมาะกับคอนเทนต์โพสต์ยาว, engagement และการปูทางรายวัน",
   },
   {
-    id: "line",
-    title: "LINE",
-    description: "เหมาะกับการวางคอนเทนต์ที่ต่อยอดเป็น LINE Broadcast ได้ตรงขึ้น",
+    id: "instagram",
+    title: "Instagram",
+    description: "เหมาะกับคอนเทนต์ที่ต้องการ hook เร็ว ภาพชัด และอ่านสั้นกระชับ",
   },
   {
-    id: "general",
-    title: "General",
-    description: "ใช้เมื่ออยากได้แผนกลางที่หยิบไปต่อยอดได้หลายรูปแบบ",
+    id: "tiktok",
+    title: "TikTok",
+    description: "เหมาะกับคอนเทนต์ที่เน้นจังหวะไว มุมสด และหยุดคนดูให้ได้เร็ว",
+  },
+  {
+    id: "youtube",
+    title: "YouTube",
+    description: "เหมาะกับคอนเทนต์ที่เล่าได้ลึกขึ้น และต่อยอดเป็นวิดีโอได้ชัด",
   },
 ];
+
+const TONE_OPTIONS = [
+  "",
+  "เป็นกันเอง",
+  "ให้ความรู้แบบเข้าใจง่าย",
+  "สนุกและมีพลัง",
+  "อบอุ่นน่าเชื่อถือ",
+  "พรีเมียมและมืออาชีพ",
+  "ตรงประเด็น กระชับ ชัดเจน",
+];
+
+const LOADING_PROGRESS_BY_STEP: Record<number, number> = {
+  0: 8,
+  1: 35,
+  2: 68,
+  3: 95,
+};
 
 type PlannerPageState = {
   hasAccess: boolean;
@@ -117,8 +139,9 @@ function getInitialInput(): ContentPlanner30Input {
     return {
       platform:
         parsed.platform === "facebook" ||
-        parsed.platform === "line" ||
-        parsed.platform === "general"
+        parsed.platform === "instagram" ||
+        parsed.platform === "tiktok" ||
+        parsed.platform === "youtube"
           ? parsed.platform
           : "facebook",
       tone: parsed.tone || "",
@@ -133,42 +156,30 @@ function getInitialInput(): ContentPlanner30Input {
   }
 }
 
-function buildBusinessContext(
-  structuredAvatar: StructuredAvatar | null,
-  avatarAnalysis: string
-) {
-  if (!structuredAvatar && !avatarAnalysis) {
-    return "";
-  }
-
-  const parts = [
-    structuredAvatar?.business,
-    structuredAvatar?.product,
-    structuredAvatar?.roughAvatar,
-    structuredAvatar?.shortSummary,
-  ].filter(Boolean);
-
-  const structuredSummary = parts.join(" | ");
-  const analysisPreview =
-    avatarAnalysis.length > 280
-      ? `${avatarAnalysis.slice(0, 280).trim()}...`
-      : avatarAnalysis;
-
-  return [structuredSummary, analysisPreview].filter(Boolean).join("\n\n");
-}
-
 export default function ContentPlannerPage() {
   const [pageState] = useState<PlannerPageState>(() => getInitialState());
   const [form, setForm] = useState<ContentPlanner30Input>(() => getInitialInput());
+  const [savedPlan] = useState<ContentPlanner30Plan | null>(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const raw = localStorage.getItem(PLANNER_PLAN_KEY);
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as ContentPlanner30Plan;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState(pageState.error);
-
-  const businessContext = useMemo(
-    () => buildBusinessContext(pageState.structuredAvatar, pageState.avatarAnalysis),
-    [pageState.structuredAvatar, pageState.avatarAnalysis]
-  );
 
   useEffect(() => {
     if (!pageState.hasAccess) {
@@ -281,11 +292,37 @@ export default function ContentPlannerPage() {
           </div>
         )}
 
-        {businessContext && (
-          <div className="border rounded-xl p-6 bg-gray-50 space-y-3">
-            <h2 className="text-2xl font-semibold">บริบทธุรกิจที่ระบบจะใช้วางแผน</h2>
-            <div className="text-sm leading-7 whitespace-pre-wrap text-gray-800">
-              {businessContext}
+        {savedPlan && (
+          <div className="border rounded-xl p-6 bg-gray-50 space-y-4">
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">
+                แผนคอนเทนต์ที่สร้างไว้ล่าสุด
+              </h2>
+              <p className="text-sm leading-7 text-gray-700">
+                พบแผน 30 วันที่เคยสร้างไว้แล้ว
+                คุณสามารถกลับไปดูแผนเดิมก่อนได้โดยไม่ต้องสร้างใหม่ทุกครั้ง
+              </p>
+            </div>
+
+            <div className="text-sm leading-7 text-gray-800 space-y-1">
+              <p>
+                <strong>Platform:</strong> {savedPlan.platform}
+              </p>
+              <p>
+                <strong>จำนวนวันที่สร้างไว้:</strong> {savedPlan.days.length} วัน
+              </p>
+              <p>
+                <strong>Avatar summary:</strong> {savedPlan.avatarSummary}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/content-generator/30-day-planner/final"
+                className="border px-6 py-3 rounded-lg hover:bg-white transition"
+              >
+                ดูแผนที่สร้างไว้
+              </Link>
             </div>
           </div>
         )}
@@ -310,7 +347,7 @@ export default function ContentPlannerPage() {
                   onClick={() => updateForm({ platform: option.id })}
                   className={`border rounded-xl p-4 text-left transition ${
                     form.platform === option.id
-                      ? "border-black bg-gray-50"
+                      ? "border-green-600 bg-green-50"
                       : "hover:bg-gray-50"
                   }`}
                 >
@@ -327,13 +364,17 @@ export default function ContentPlannerPage() {
             <label className="font-medium block mb-1">
               Tone / style direction (optional)
             </label>
-            <textarea
+            <select
               value={form.tone}
               onChange={(event) => updateForm({ tone: event.target.value })}
-              className="w-full border p-3 rounded-lg"
-              rows={3}
-              placeholder="เช่น เป็นกันเอง อ่านง่าย ใช้ภาษาธรรมชาติ ไม่ขายแรง"
-            />
+              className="w-full border p-3 rounded-lg bg-white"
+            >
+              {TONE_OPTIONS.map((option) => (
+                <option key={option || "empty"} value={option}>
+                  {option || "เลือก tone / style"}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -362,6 +403,17 @@ export default function ContentPlannerPage() {
             </div>
 
             <p className="text-sm text-gray-700 mb-4">{loadingMessage}</p>
+
+            <div className="mb-5">
+              <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-black transition-all duration-500"
+                  style={{
+                    width: `${LOADING_PROGRESS_BY_STEP[loadingStep] ?? 8}%`,
+                  }}
+                />
+              </div>
+            </div>
 
             <div className="space-y-3 text-sm">
               <div
@@ -394,7 +446,7 @@ export default function ContentPlannerPage() {
             href="/content-generator"
             className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
           >
-            กลับ Content Generator
+            ย้อนกลับ
           </Link>
 
           <button

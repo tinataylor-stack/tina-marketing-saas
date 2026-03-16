@@ -151,19 +151,6 @@ export default function ContentGeneratorPage() {
           </Link>
 
           <Link
-            href="/content-generator/line-broadcast"
-            className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
-          >
-            <h2 className="text-2xl font-semibold mb-3">
-              Line Broadcast Generator
-            </h2>
-            <p className="text-sm leading-7 text-gray-700">
-              สร้างข้อความสำหรับ LINE Broadcast ได้ทั้งแบบเริ่มใหม่เอง
-              หรือใช้ข้อมูลจากวันที่เลือกไว้ในแผนคอนเทนต์ที่บันทึกไว้
-            </p>
-          </Link>
-
-          <Link
             href="/content-generator/video-script"
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >

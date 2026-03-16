@@ -18,8 +18,9 @@ const openai = new OpenAI({
 });
 
 function getPlatformLabel(platform: PlannerPlatform) {
-  if (platform === "line") return "LINE";
-  if (platform === "general") return "General";
+  if (platform === "instagram") return "Instagram";
+  if (platform === "tiktok") return "TikTok";
+  if (platform === "youtube") return "YouTube";
   return "Facebook";
 }
 
@@ -56,7 +57,6 @@ Important:
 - Balance the 30 days naturally. Do not cluster only one type together for too many consecutive days.
 - Recommend one generator type for each day using only:
   - social-post
-  - line-broadcast
   - video-script
 - Keep the outputs strategic and execution-ready.
 - Do not write full finished posts or scripts.
@@ -134,7 +134,7 @@ Return JSON only with this exact shape:
                     format: { type: "string" },
                     recommendedGeneratorType: {
                       type: "string",
-                      enum: ["social-post", "line-broadcast", "video-script"],
+                      enum: ["social-post", "video-script"],
                     },
                     hookIdea: { type: "string" },
                     angle: { type: "string" },

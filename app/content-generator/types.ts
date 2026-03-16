@@ -1,4 +1,8 @@
-export type PlannerPlatform = "facebook" | "line" | "general";
+export type PlannerPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "youtube";
 
 export type ContentType =
   | "ให้ความรู้"
@@ -7,10 +11,7 @@ export type ContentType =
   | "สร้างความไว้วางใจ"
   | "กระตุ้นการมีส่วนร่วม";
 
-export type RecommendedGeneratorType =
-  | "social-post"
-  | "line-broadcast"
-  | "video-script";
+export type RecommendedGeneratorType = "social-post" | "video-script";
 
 export type StructuredAvatar = {
   shortSummary?: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Navbar from "../../../components/Navbar";
 import type {
   ContentPlanner30Plan,
@@ -12,29 +12,61 @@ import type {
 const PLANNER_PLAN_KEY = "contentPlanner30Plan";
 const PLANNER_SELECTED_DAY_KEY = "contentPlanner30SelectedDay";
 
-function getInitialPlan(): ContentPlanner30Plan | null {
-  if (typeof window === "undefined") {
-    return null;
+type PlannerFinalSnapshot = {
+  hasChecked: boolean;
+  plan: ContentPlanner30Plan | null;
+};
+
+const EMPTY_SNAPSHOT: PlannerFinalSnapshot = {
+  hasChecked: false,
+  plan: null,
+};
+
+let cachedSnapshotKey = "";
+let cachedSnapshotValue: PlannerFinalSnapshot = EMPTY_SNAPSHOT;
+
+function subscribe() {
+  return () => {};
+}
+
+function getServerSnapshot() {
+  return EMPTY_SNAPSHOT;
+}
+
+function getClientSnapshot(): PlannerFinalSnapshot {
+  const raw = localStorage.getItem(PLANNER_PLAN_KEY) || "";
+
+  if (raw === cachedSnapshotKey) {
+    return cachedSnapshotValue;
   }
 
-  const raw = localStorage.getItem(PLANNER_PLAN_KEY);
-
   if (!raw) {
-    return null;
+    cachedSnapshotKey = raw;
+    cachedSnapshotValue = {
+      hasChecked: true,
+      plan: null,
+    };
+    return cachedSnapshotValue;
   }
 
   try {
-    return JSON.parse(raw) as ContentPlanner30Plan;
+    cachedSnapshotKey = raw;
+    cachedSnapshotValue = {
+      hasChecked: true,
+      plan: JSON.parse(raw) as ContentPlanner30Plan,
+    };
+    return cachedSnapshotValue;
   } catch {
-    return null;
+    cachedSnapshotKey = raw;
+    cachedSnapshotValue = {
+      hasChecked: true,
+      plan: null,
+    };
+    return cachedSnapshotValue;
   }
 }
 
 function getGeneratorPath(day: ContentPlannerDay) {
-  if (day.recommendedGeneratorType === "line-broadcast") {
-    return "/content-generator/line-broadcast";
-  }
-
   if (day.recommendedGeneratorType === "video-script") {
     return "/content-generator/video-script";
   }
@@ -57,14 +89,18 @@ function buildCopyText(day: ContentPlannerDay) {
 }
 
 export default function ContentPlannerFinalPage() {
-  const [plan] = useState<ContentPlanner30Plan | null>(() => getInitialPlan());
+  const { hasChecked, plan } = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot
+  );
   const [copyMessage, setCopyMessage] = useState("");
 
   useEffect(() => {
-    if (!plan) {
+    if (hasChecked && !plan) {
       window.location.href = "/content-generator/30-day-planner";
     }
-  }, [plan]);
+  }, [hasChecked, plan]);
 
   useEffect(() => {
     if (!copyMessage) return;
@@ -101,7 +137,7 @@ export default function ContentPlannerFinalPage() {
     window.location.href = getGeneratorPath(day);
   };
 
-  if (!plan) return null;
+  if (!hasChecked || !plan) return null;
 
   return (
     <main className="min-h-screen bg-white text-black">
@@ -209,13 +245,6 @@ export default function ContentPlannerFinalPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="/content-generator"
-            className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
-          >
-            กลับ Content Generator
-          </Link>
-
           <Link
             href="/content-generator/30-day-planner"
             className="border px-6 py-3 rounded-lg hover:bg-gray-50 transition"
