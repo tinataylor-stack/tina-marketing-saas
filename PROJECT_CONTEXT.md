@@ -1,6 +1,6 @@
 # Project Overview
 
-This is a Next.js App Router SaaS app for AI-powered marketing tools. The product direction is a modular AI marketing system builder, not one giant content generator. The app is organized into separate tool families so strategy and content stay clearly separated.
+This is a Next.js App Router SaaS app for AI-powered marketing tools. The product direction is still a modular AI marketing system builder, not one giant content generator. The app is organized into separate tool families so strategy and content stay clearly separated.
 
 Current top-level product areas:
 - Avatar Analyzer
@@ -28,17 +28,56 @@ Main goal:
 ## High-level route structure
 
 - `app/page.tsx`
-  - main home page with cards for Content Generator, Lead Magnet, Launch
+  - home page with cards for Content Generator, Lead Magnet, Launch
 - `app/avatar-analyzer/page.tsx`
-  - avatar analysis tool
+  - avatar analysis tool and shared context entry point
 - `app/lead-magnet-builder/...`
   - lead magnet strategy flow
 - `app/lead-magnet-content/page.tsx`
   - lead magnet content generation
 - `app/launch-sequence/...`
-  - launch and prelaunch flow
+  - launch foundation, prelaunch strategy, prelaunch content, and launch LINE broadcast flow
 - `app/content-generator/...`
   - content execution tools
+
+## Launch structure
+
+- `app/launch-sequence/page.tsx`
+  - launch hub with Step 1, Step 2, Step 3 cards
+- `app/launch-sequence/step-1/page.tsx`
+  - launch foundation input page
+- `app/launch-sequence/step-2/page.tsx`
+  - prelaunch strategy generator for PLC 1 / PLC 2 / PLC 3
+- `app/launch-sequence/prelaunch/page.tsx`
+  - Step 2 hub
+- `app/launch-sequence/prelaunch-content/page.tsx`
+  - hub for prelaunch content pieces with saved Line preview display
+- `app/launch-sequence/prelaunch-content/plc-1/page.tsx`
+- `app/launch-sequence/prelaunch-content/plc-2/page.tsx`
+- `app/launch-sequence/prelaunch-content/plc-3/page.tsx`
+- `app/launch-sequence/launch/page.tsx`
+  - Step 3 launch page for LINE Broadcast launch messages
+
+## Launch API routes
+
+- `app/api/launch-sequence/prelaunch-plan/route.ts`
+  - generates PLC 1 / PLC 2 / PLC 3 strategic sequence
+- `app/api/launch-sequence/prelaunch-content/plc-1/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-2/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-3/route.ts`
+  - generate full PLC content plus Line preview options
+- `app/api/launch-sequence/prelaunch-content/plc-1/line-preview/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-2/line-preview/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-3/line-preview/route.ts`
+  - regenerate Line preview options only
+- `app/api/launch-sequence/launch/day-1-cart-open/route.ts`
+- `app/api/launch-sequence/launch/day-2-objection/route.ts`
+- `app/api/launch-sequence/launch/day-3-objection/route.ts`
+- `app/api/launch-sequence/launch/day-4-urgency/route.ts`
+- `app/api/launch-sequence/launch/day-5-cart-close/route.ts`
+  - day-based LINE Broadcast launch message generation
+- `app/api/launch-sequence/launch/shared.ts`
+  - shared validation and prompt builder for Step 3 launch routes
 
 ## Content Generator structure
 
@@ -49,9 +88,9 @@ Main goal:
 - `app/content-generator/30-day-planner/final/page.tsx`
   - saved/generated 30-day plan page
 - `app/content-generator/social-post/page.tsx`
-  - real execution page with planner mode + structured freestyle mode
+  - execution page with planner mode + structured freestyle mode
 - `app/content-generator/video-script/page.tsx`
-  - real execution page with planner mode + structured freestyle mode
+  - execution page with planner mode + structured freestyle mode
 - `app/content-generator/types.ts`
   - shared planner/generator types
 
@@ -64,31 +103,13 @@ Main goal:
 - `app/api/content-generator/video-script/route.ts`
   - generates finished video script
 
-## Launch structure relevant to next task
-
-- `app/launch-sequence/page.tsx`
-  - launch hub
-- `app/launch-sequence/prelaunch/page.tsx`
-  - step 2 hub
-- `app/launch-sequence/prelaunch-content/page.tsx`
-  - hub for prelaunch content pieces
-- `app/launch-sequence/prelaunch-content/plc-1/page.tsx`
-- `app/launch-sequence/prelaunch-content/plc-2/page.tsx`
-- `app/launch-sequence/prelaunch-content/plc-3/page.tsx`
-
-## Launch API routes relevant to next task
-
-- `app/api/launch-sequence/prelaunch-content/plc-1/route.ts`
-- `app/api/launch-sequence/prelaunch-content/plc-2/route.ts`
-- `app/api/launch-sequence/prelaunch-content/plc-3/route.ts`
-
 ## localStorage usage
 
 Important shared keys:
 - `confirmedAvatarAnalysis`
 - `confirmedStructuredAvatar`
 
-Launch keys:
+Launch foundation and prelaunch keys:
 - `launchSequenceOffer`
 - `launchSequenceOfferDetails`
 - `launchSequenceOfferFormat`
@@ -96,9 +117,23 @@ Launch keys:
 - `launchSequenceGoal`
 - `launchSequenceContext`
 - `launchSequencePrelaunchPlan`
+- `launchSequencePlc1LinePreviewOptions`
+- `launchSequencePlc2LinePreviewOptions`
+- `launchSequencePlc3LinePreviewOptions`
+- `launchSequencePlc1LinePreview`
+- `launchSequencePlc2LinePreview`
+- `launchSequencePlc3LinePreview`
 - `launchSequencePlc1Content`
 - `launchSequencePlc2Content`
 - `launchSequencePlc3Content`
+
+Launch Step 3 keys:
+- `launchSequenceLaunchSetup`
+- `launchSequenceDay1Messages`
+- `launchSequenceDay2Messages`
+- `launchSequenceDay3Messages`
+- `launchSequenceDay4Messages`
+- `launchSequenceDay5Messages`
 
 Content Generator keys:
 - `contentPlanner30Input`
@@ -117,7 +152,7 @@ Content Generator keys:
 
 ### Content Generator hub
 - `Content Generator` main page is no longer a placeholder
-- it now links to:
+- it links to:
   - `30-Day Content Planner`
   - `Social Post Generator`
   - `Video Script Generator`
@@ -138,7 +173,7 @@ Content Generator keys:
   - สร้างความบันเทิง
   - สร้างความไว้วางใจ
   - กระตุ้นการมีส่วนร่วม
-- planner now only recommends 2 content execution types:
+- planner recommends 2 content execution types:
   - `social-post`
   - `video-script`
 - planner final page is hydration-safe
@@ -150,14 +185,6 @@ Content Generator keys:
   - planner mode
   - freestyle mode
 - freestyle mode uses structured writing framework instead of one blank textarea
-- planner mode has:
-  - selected day summary
-  - `สร้างโพสท์`
-  - `เลือกวันอื่น`
-- freestyle mode has:
-  - structured Thai form
-  - required-field red asterisks
-  - compact brief box
 - generation flow includes:
   - loading block
   - progress bar
@@ -174,94 +201,116 @@ Content Generator keys:
 - includes loading/result/copy/regenerate flow
 - page is hydration-safe
 
+### Launch Prelaunch Content
+- `prelaunch-content` hub displays saved Line preview text on PLC cards before opening the full page
+- PLC 1 / 2 / 3 routes generate:
+  - 3 Line preview options
+  - full Facebook post content
+- each PLC page supports saving and regenerating Line preview options separately
+
+### Launch Step 3
+- `app/launch-sequence/launch/page.tsx` is no longer a placeholder
+- Step 3 is now a dedicated LINE Broadcast launch tool
+- Launch Setup block collects:
+  - bonuses
+  - urgency mechanism
+  - checkout direction
+  - launch notes
+  - priority objections
+- Step 3 uses a 5-day structure:
+  - Day 1: Cart Open, 2 messages
+  - Day 2: Objection Handling, 1 message
+  - Day 3: Objection Handling, 1 message
+  - Day 4: Objection Handling + Scarcity + Urgency, 2 messages
+  - Day 5: Last Call / Cart Close, 3 messages
+- each day is generated through its own API route
+- each day block supports:
+  - generate
+  - regenerate
+  - copy per message
+  - in-block progress UI
+- Launch Setup has its own progress bar when the user clicks `สร้างใหม่`
+- current behavior of Launch Setup `สร้างใหม่`:
+  - clears old Day 1 - Day 5 launch outputs
+  - auto-generates Day 1 only
+  - leaves Day 2 - Day 5 for manual generation by block
+- launch prompts now explicitly forbid showing price anywhere in generated launch messages
+
+### Launch Hub cleanup
+- Step 3 card on `app/launch-sequence/page.tsx` no longer shows `Coming Soon`
+
 ### Removal completed
-- `Line Broadcast Generator` was removed entirely
+- `Line Broadcast Generator` was removed from the old Content Generator area
 - removed from Content Generator hub
 - removed from planner routing/types/schema
-- deleted page file
 
-# Current Problem / Current Task
+# Current Goal
 
-The next task is not in Content Generator.
+The current goal is in Launch Step 2, not Step 3.
 
 Next target:
-- fix `เนื้อหา Prelaunch` on `launch-sequence/prelaunch-content` flow
-- specifically add a short line message preview before the audience clicks to read the full content
+- update `app/launch-sequence/step-2/page.tsx`
+- allow the user to edit PLC 1, PLC 2, and PLC 3 directly on the Prelaunch Strategy page if they do not like the generated strategy
 
-Interpretation for next session:
-- likely update the Prelaunch content pages and/or API output handling so each PLC content can surface a short preview/message snippet
-- this should happen in Launch Prelaunch Content, not Content Generator
+This is specifically about editing the strategy itself on Step 2.
+It is not about the prelaunch content pages and not about the launch LINE message page.
 
-# Known Issues
+# Known Issues / Current Gaps
 
-- `npm run build` is still blocked by Google Fonts fetch in `app/layout.tsx`
-  - imports `Geist`
-  - imports `Geist_Mono`
-- repo has pre-existing lint issues outside the touched Content Generator files
-- launch prelaunch content still uses the older content page structure compared with the newer generator patterns
-- `launch-sequence/launch/page.tsx` is still placeholder/incomplete
-- planner/day cards still contain some English labels in a few places on the 30-day planner final page, though this is not the current next task
+- `app/launch-sequence/step-2/page.tsx` is still view-only after generation
+- the user can regenerate the whole prelaunch plan, but cannot manually edit:
+  - headline
+  - contentOutline
+  - talkingPoints
+  - cta
+  for PLC 1 / PLC 2 / PLC 3 on that page
+- Step 2 still uses display cards rather than editable fields after generation
+- there may still be pre-existing lint issues elsewhere in the repo outside the launch work touched in this session
 - no database; all continuity is localStorage-based
 
 # Next Steps
 
 ## Exact next implementation focus
-Add a short preview/message line for Prelaunch content before the user opens or reads the full content.
+Allow manual editing of PLC 1 / PLC 2 / PLC 3 strategy blocks on `app/launch-sequence/step-2/page.tsx`.
 
 ## Suggested implementation sequence
 
-1. Inspect `app/launch-sequence/prelaunch-content/page.tsx`
-- understand current menu card structure for PLC 1 / PLC 2 / PLC 3
+1. Inspect `app/launch-sequence/step-2/page.tsx`
+- identify how generated `plan` state is rendered today
+- identify where `launchSequencePrelaunchPlan` is saved
 
-2. Inspect:
-- `app/launch-sequence/prelaunch-content/plc-1/page.tsx`
-- `app/launch-sequence/prelaunch-content/plc-2/page.tsx`
-- `app/launch-sequence/prelaunch-content/plc-3/page.tsx`
-- check what saved content shape exists now and whether only full long-form content is stored
+2. Convert PLC display sections into editable fields
+- `headline`
+- `contentOutline`
+- `talkingPoints`
+- `cta`
 
-3. Decide preview source
-- simplest likely path:
-  - derive a short line preview from already generated content
-- stronger path:
-  - update each PLC API route to also return a short preview line
-- preserve route responsibilities and don’t blur them
+3. Add explicit save/update behavior
+- save edited PLC strategy back to component state
+- persist edited plan back to `launchSequencePrelaunchPlan`
 
-4. Update UX on `app/launch-sequence/prelaunch-content/page.tsx`
-- each PLC card should show a preview line if content already exists
-- if no content exists yet, keep current description or empty state
-- preview should appear before user clicks into full content
+4. Preserve regenerate behavior
+- user should still be able to regenerate the full plan if needed
+- regenerate should not silently remove the ability to manually edit afterward
 
-5. If needed, update localStorage contract
-- either keep using:
-  - `launchSequencePlc1Content`
-  - `launchSequencePlc2Content`
-  - `launchSequencePlc3Content`
-- or add companion preview keys if the full-content-only approach is awkward:
-  - `launchSequencePlc1Preview`
-  - `launchSequencePlc2Preview`
-  - `launchSequencePlc3Preview`
+5. Keep Step 2 strategy-focused
+- do not turn Step 2 into prelaunch content generation
+- do not mix this task into PLC content pages
 
 6. Verify locally
-- targeted lint on touched launch files
-- do not claim full build success unless font issue is separately solved
+- run `npm run build`
 
 # Important Files
 
-## For next task
-- [app/launch-sequence/prelaunch-content/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/prelaunch-content/page.tsx)
-- [app/launch-sequence/prelaunch-content/plc-1/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/prelaunch-content/plc-1/page.tsx)
-- [app/launch-sequence/prelaunch-content/plc-2/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/prelaunch-content/plc-2/page.tsx)
-- [app/launch-sequence/prelaunch-content/plc-3/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/prelaunch-content/plc-3/page.tsx)
-- [app/api/launch-sequence/prelaunch-content/plc-1/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/prelaunch-content/plc-1/route.ts)
-- [app/api/launch-sequence/prelaunch-content/plc-2/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/prelaunch-content/plc-2/route.ts)
-- [app/api/launch-sequence/prelaunch-content/plc-3/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/prelaunch-content/plc-3/route.ts)
+## Current Step 2 next-task files
+- [app/launch-sequence/step-2/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/step-2/page.tsx)
+- [app/api/launch-sequence/prelaunch-plan/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/prelaunch-plan/route.ts)
 
-## Important existing Content Generator files for reference
-- [app/content-generator/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/content-generator/page.tsx)
-- [app/content-generator/30-day-planner/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/content-generator/30-day-planner/page.tsx)
-- [app/content-generator/30-day-planner/final/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/content-generator/30-day-planner/final/page.tsx)
-- [app/content-generator/social-post/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/content-generator/social-post/page.tsx)
-- [app/content-generator/video-script/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/content-generator/video-script/page.tsx)
-- [app/api/content-generator/30-day-planner/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/content-generator/30-day-planner/route.ts)
-- [app/api/content-generator/social-post/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/content-generator/social-post/route.ts)
-- [app/api/content-generator/video-script/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/content-generator/video-script/route.ts)
+## Current Step 3 files
+- [app/launch-sequence/launch/page.tsx](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/launch-sequence/launch/page.tsx)
+- [app/api/launch-sequence/launch/shared.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/shared.ts)
+- [app/api/launch-sequence/launch/day-1-cart-open/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/day-1-cart-open/route.ts)
+- [app/api/launch-sequence/launch/day-2-objection/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/day-2-objection/route.ts)
+- [app/api/launch-sequence/launch/day-3-objection/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/day-3-objection/route.ts)
+- [app/api/launch-sequence/launch/day-4-urgency/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/day-4-urgency/route.ts)
+- [app/api/launch-sequence/launch/day-5-cart-close/route.ts](/Users/tinasomchit-taylor/Desktop/tina-marketing-saas/app/api/launch-sequence/launch/day-5-cart-close/route.ts)

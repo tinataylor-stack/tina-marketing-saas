@@ -95,7 +95,7 @@ export default function LaunchSequencePage() {
             className="border rounded-xl p-6 bg-white hover:bg-gray-50 transition block"
           >
             <h2 className="text-2xl font-semibold mb-3">
-              Step 3 : Launch (Coming Soon)
+              Step 3 : Launch
             </h2>
             <p className="text-sm leading-7 text-gray-700">
               รวมเครื่องมือสำหรับ Launch Plan
