@@ -51,6 +51,9 @@ export default function PrelaunchSequenceStepPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [hasAttemptedGeneration, setHasAttemptedGeneration] = useState(false);
+  const [isEditingPlc1, setIsEditingPlc1] = useState(false);
+  const [isEditingPlc2, setIsEditingPlc2] = useState(false);
+  const [isEditingPlc3, setIsEditingPlc3] = useState(false);
 
   useEffect(() => {
     const savedAccess = localStorage.getItem("appAccessGranted");
@@ -184,6 +187,9 @@ export default function PrelaunchSequenceStepPage() {
       };
 
       setPlan(nextPlan);
+      setIsEditingPlc1(false);
+      setIsEditingPlc2(false);
+      setIsEditingPlc3(false);
       localStorage.setItem("launchSequencePrelaunchPlan", JSON.stringify(nextPlan));
       setSuccessMessage("สร้าง Prelaunch Sequence เรียบร้อยแล้ว");
     } catch (err) {
@@ -196,12 +202,126 @@ export default function PrelaunchSequenceStepPage() {
     }
   };
 
+  const handlePlc1Change = (field: keyof PlcSection, value: string) => {
+    setPlan((prev) => ({
+      ...prev,
+      plc1: {
+        ...prev.plc1,
+        [field]: value,
+      },
+    }));
+    setSuccessMessage("");
+    setError("");
+  };
+
+  const handlePlc2Change = (field: keyof PlcSection, value: string) => {
+    setPlan((prev) => ({
+      ...prev,
+      plc2: {
+        ...prev.plc2,
+        [field]: value,
+      },
+    }));
+    setSuccessMessage("");
+    setError("");
+  };
+
+  const handlePlc3Change = (field: keyof PlcSection, value: string) => {
+    setPlan((prev) => ({
+      ...prev,
+      plc3: {
+        ...prev.plc3,
+        [field]: value,
+      },
+    }));
+    setSuccessMessage("");
+    setError("");
+  };
+
+  const handleSavePlc = (plcKey: keyof PrelaunchPlan) => {
+    const trimmedSection: PlcSection = {
+      headline: plan[plcKey].headline.trim(),
+      contentOutline: plan[plcKey].contentOutline.trim(),
+      talkingPoints: plan[plcKey].talkingPoints.trim(),
+      cta: plan[plcKey].cta.trim(),
+    };
+
+    if (
+      !trimmedSection.headline ||
+      !trimmedSection.contentOutline ||
+      !trimmedSection.talkingPoints ||
+      !trimmedSection.cta
+    ) {
+      setError(`กรุณากรอกข้อมูล ${plcKey.toUpperCase()} ให้ครบก่อนบันทึก`);
+      setSuccessMessage("");
+      return;
+    }
+
+    const nextPlan: PrelaunchPlan = {
+      ...plan,
+      [plcKey]: trimmedSection,
+    };
+
+    setPlan(nextPlan);
+    localStorage.setItem("launchSequencePrelaunchPlan", JSON.stringify(nextPlan));
+    if (plcKey === "plc1") {
+      setIsEditingPlc1(false);
+    }
+    if (plcKey === "plc2") {
+      setIsEditingPlc2(false);
+    }
+    if (plcKey === "plc3") {
+      setIsEditingPlc3(false);
+    }
+    setError("");
+    setSuccessMessage(`บันทึกการแก้ไข ${plcKey.toUpperCase()} เรียบร้อยแล้ว`);
+  };
+
+  const handleCancelEdit = (
+    plcKey: keyof PrelaunchPlan,
+    setEditing: (value: boolean) => void
+  ) => {
+    const savedPlcPlan = localStorage.getItem("launchSequencePrelaunchPlan");
+
+    if (savedPlcPlan) {
+      try {
+        setPlan(JSON.parse(savedPlcPlan) as PrelaunchPlan);
+      } catch {
+        setPlan(DEFAULT_PLAN);
+      }
+    }
+
+    setEditing(false);
+    setError("");
+    setSuccessMessage("");
+  };
+
   const renderPlcCard = (
     plcKey: keyof PrelaunchPlan,
     title: string,
     description: string
   ) => {
     const section = plan[plcKey];
+    const isEditing =
+      plcKey === "plc1"
+        ? isEditingPlc1
+        : plcKey === "plc2"
+          ? isEditingPlc2
+          : isEditingPlc3;
+
+    const handleChange =
+      plcKey === "plc1"
+        ? handlePlc1Change
+        : plcKey === "plc2"
+          ? handlePlc2Change
+          : handlePlc3Change;
+
+    const setEditing =
+      plcKey === "plc1"
+        ? setIsEditingPlc1
+        : plcKey === "plc2"
+          ? setIsEditingPlc2
+          : setIsEditingPlc3;
 
     return (
       <div className="border rounded-xl p-6 bg-white space-y-5">
@@ -212,30 +332,100 @@ export default function PrelaunchSequenceStepPage() {
 
         <div>
           <h3 className="font-medium mb-1">Headline</h3>
-          <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
-            {section.headline}
-          </div>
+          {isEditing ? (
+            <textarea
+              value={section.headline}
+              onChange={(e) => handleChange("headline", e.target.value)}
+              className="w-full border rounded-lg p-4 text-sm leading-7"
+              rows={3}
+            />
+          ) : (
+            <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
+              {section.headline}
+            </div>
+          )}
         </div>
 
         <div>
           <h3 className="font-medium mb-1">Content outline</h3>
-          <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
-            {section.contentOutline}
-          </div>
+          {isEditing ? (
+            <textarea
+              value={section.contentOutline}
+              onChange={(e) => handleChange("contentOutline", e.target.value)}
+              className="w-full border rounded-lg p-4 text-sm leading-7"
+              rows={8}
+            />
+          ) : (
+            <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
+              {section.contentOutline}
+            </div>
+          )}
         </div>
 
         <div>
           <h3 className="font-medium mb-1">Key talking points</h3>
-          <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
-            {section.talkingPoints}
-          </div>
+          {isEditing ? (
+            <textarea
+              value={section.talkingPoints}
+              onChange={(e) => handleChange("talkingPoints", e.target.value)}
+              className="w-full border rounded-lg p-4 text-sm leading-7"
+              rows={8}
+            />
+          ) : (
+            <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
+              {section.talkingPoints}
+            </div>
+          )}
         </div>
 
         <div>
           <h3 className="font-medium mb-1">CTA</h3>
-          <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
-            {section.cta}
-          </div>
+          {isEditing ? (
+            <textarea
+              value={section.cta}
+              onChange={(e) => handleChange("cta", e.target.value)}
+              className="w-full border rounded-lg p-4 text-sm leading-7"
+              rows={4}
+            />
+          ) : (
+            <div className="border rounded-lg p-4 bg-gray-50 whitespace-pre-wrap text-sm leading-7">
+              {section.cta}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {isEditing ? (
+            <>
+              <button
+                type="button"
+                onClick={() => handleSavePlc(plcKey)}
+                className="bg-black text-white px-5 py-3 rounded-lg"
+              >
+                {`บันทึกการแก้ไข ${plcKey.toUpperCase()}`}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCancelEdit(plcKey, setEditing)}
+                className="border px-5 py-3 rounded-lg"
+              >
+                ยกเลิก
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(true);
+                setError("");
+                setSuccessMessage("");
+              }}
+              className="border px-5 py-3 rounded-lg hover:bg-gray-50 transition"
+            >
+              {`แก้ไข ${plcKey.toUpperCase()}`}
+            </button>
+          )}
         </div>
       </div>
     );
