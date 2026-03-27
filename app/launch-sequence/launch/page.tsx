@@ -31,6 +31,7 @@ type LaunchSetup = {
   checkoutDirection: string;
   launchNotes: string;
   priorityObjections: string;
+  testimonials: string;
 };
 
 type DayConfig = {
@@ -63,8 +64,8 @@ const DAY_CONFIGS: DayConfig[] = [
   },
   {
     key: "day3",
-    title: "Day 3: Objection Handling",
-    description: "1 ข้อความสำหรับคลาย objection อีกมุมหนึ่ง เพื่อให้ sequence ไม่ซ้ำกับ Day 2",
+    title: "Day 3: Proof / Belief",
+    description: "1 ข้อความที่เน้น proof, testimonial energy และความเชื่อว่าคนแบบเขาก็ทำได้",
     storageKey: "launchSequenceDay3Messages",
     route: "/api/launch-sequence/launch/day-3-objection",
     messageCount: 1,
@@ -93,6 +94,7 @@ const DEFAULT_SETUP: LaunchSetup = {
   checkoutDirection: "",
   launchNotes: "",
   priorityObjections: "",
+  testimonials: "",
 };
 
 const DEFAULT_MESSAGES: Record<DayConfig["key"], string[]> = {
@@ -653,27 +655,102 @@ export default function LaunchPage() {
         )}
 
         <div className="border rounded-xl p-6 bg-white space-y-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold mb-2">Launch Setup</h2>
+            <p className="text-sm leading-7 text-gray-700">
+              กรอกข้อมูลเฉพาะรอบ launch นี้ เพื่อให้ข้อความ LINE Broadcast
+              เชื่อมจาก prelaunch ไปสู่การปิดการขายได้ชัดขึ้น
+            </p>
+            <p className="text-sm leading-7 text-gray-500 mt-2">
+              ปุ่มสร้างใหม่จะสร้าง Day 1 ให้ก่อน ส่วน Day 2 - Day 5
+              สามารถกดสร้างแยกในแต่ละบล็อกได้
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">Launch Setup</h2>
-              <p className="text-sm leading-7 text-gray-700">
-                กรอกข้อมูลเฉพาะรอบ launch นี้ เพื่อให้ข้อความ LINE Broadcast
-                เชื่อมจาก prelaunch ไปสู่การปิดการขายได้ชัดขึ้น
-              </p>
-              <p className="text-sm leading-7 text-gray-500 mt-2">
-                ปุ่มสร้างใหม่จะสร้าง Day 1 ให้ก่อน ส่วน Day 2 - Day 5
-                สามารถกดสร้างแยกในแต่ละบล็อกได้
-              </p>
+              <label className="font-medium block mb-1">
+                Bonus หรือสิ่งเพิ่มมูลค่า
+              </label>
+              <textarea
+                value={setup.bonuses}
+                onChange={(e) => updateSetup({ bonuses: e.target.value })}
+                className="w-full border p-3 rounded-lg"
+                rows={4}
+                placeholder="เช่น โบนัสเวิร์กช็อป, template เพิ่มเติม, support, Q&A"
+              />
             </div>
 
-            <button
-              type="button"
-              onClick={regenerateAllMessages}
-              disabled={isRegeneratingAll}
-              className="border px-5 py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-60"
-            >
-              สร้างใหม่
-            </button>
+            <div>
+              <label className="font-medium block mb-1">
+                Scarcity / Urgency สร้างความเร่งด่วน
+              </label>
+              <textarea
+                value={setup.urgencyMechanism}
+                onChange={(e) =>
+                  updateSetup({ urgencyMechanism: e.target.value })
+                }
+                className="w-full border p-3 rounded-lg"
+                rows={4}
+                placeholder="เช่น ปิดรับวันศุกร์ 22:00, โบนัสหมดเมื่อ cart ปิด, ราคานี้เฉพาะรอบนี้"
+              />
+            </div>
+
+            <div>
+              <label className="font-medium block mb-1">CTA</label>
+              <textarea
+                value={setup.checkoutDirection}
+                onChange={(e) =>
+                  updateSetup({ checkoutDirection: e.target.value })
+                }
+                className="w-full border p-3 rounded-lg"
+                rows={4}
+                placeholder="เช่น คลิกลิงก์เพื่อสมัคร, ทักแชทเพื่อรับรายละเอียด, กดปุ่มเพื่อชำระเงิน"
+              />
+            </div>
+
+            <div>
+              <label className="font-medium block mb-1">
+                ข้อโต้แย้งหรือข้ออ้างจากลูกค้า
+              </label>
+              <textarea
+                value={setup.priorityObjections}
+                onChange={(e) =>
+                  updateSetup({ priorityObjections: e.target.value })
+                }
+                className="w-full border p-3 rounded-lg"
+                rows={4}
+                placeholder="เช่น กลัวทำไม่ได้, ไม่มีเวลา, ไม่แน่ใจว่าคุ้มไหม, กลัวว่าไม่เหมาะกับตัวเอง"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="font-medium block mb-1">
+              Testimonial หรือผลลัพธ์จากลูกค้าเก่า
+            </label>
+            <textarea
+              value={setup.testimonials}
+              onChange={(e) => updateSetup({ testimonials: e.target.value })}
+              className="w-full border p-3 rounded-lg"
+              rows={4}
+              placeholder="เช่น ลูกค้าแบบไหนที่ทำได้, transformation ที่เคยเกิดขึ้น, before/after pattern, proof ที่อยากให้ใช้ในข้อความ Day 3"
+            />
+            <p className="text-sm leading-7 text-gray-500 mt-2">
+              ช่องนี้เป็น optional ใช้สำหรับใส่ proof, testimonial, หรือ pattern
+              ที่ช่วยให้คนอ่านรู้สึกว่าเขาก็ทำได้เหมือนกัน
+            </p>
+          </div>
+
+          <div>
+            <label className="font-medium block mb-1">หมายเหตุเพิ่มเติม</label>
+            <textarea
+              value={setup.launchNotes}
+              onChange={(e) => updateSetup({ launchNotes: e.target.value })}
+              className="w-full border p-3 rounded-lg"
+              rows={4}
+              placeholder="เช่น รอบนี้อยากเน้นคนที่ดู PLC ครบแล้ว, มีคนถามเรื่องไหนเยอะเป็นพิเศษ, โทนที่อยากใช้"
+            />
           </div>
 
           {isRegeneratingAll && (
@@ -694,75 +771,15 @@ export default function LaunchPage() {
             </div>
           )}
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <label className="font-medium block mb-1">
-                Bonus หรือสิ่งเพิ่มมูลค่า
-              </label>
-              <textarea
-                value={setup.bonuses}
-                onChange={(e) => updateSetup({ bonuses: e.target.value })}
-                className="w-full border p-3 rounded-lg"
-                rows={4}
-                placeholder="เช่น โบนัสเวิร์กช็อป, template เพิ่มเติม, support, Q&A"
-              />
-            </div>
-
-            <div>
-              <label className="font-medium block mb-1">
-                Scarcity / Urgency Mechanism
-              </label>
-              <textarea
-                value={setup.urgencyMechanism}
-                onChange={(e) =>
-                  updateSetup({ urgencyMechanism: e.target.value })
-                }
-                className="w-full border p-3 rounded-lg"
-                rows={4}
-                placeholder="เช่น ปิดรับวันศุกร์ 22:00, โบนัสหมดเมื่อ cart ปิด, ราคานี้เฉพาะรอบนี้"
-              />
-            </div>
-
-            <div>
-              <label className="font-medium block mb-1">
-                CTA / Checkout Direction
-              </label>
-              <textarea
-                value={setup.checkoutDirection}
-                onChange={(e) =>
-                  updateSetup({ checkoutDirection: e.target.value })
-                }
-                className="w-full border p-3 rounded-lg"
-                rows={4}
-                placeholder="เช่น คลิกลิงก์เพื่อสมัคร, ทักแชทเพื่อรับรายละเอียด, กดปุ่มเพื่อชำระเงิน"
-              />
-            </div>
-
-            <div>
-              <label className="font-medium block mb-1">
-                Priority Objections
-              </label>
-              <textarea
-                value={setup.priorityObjections}
-                onChange={(e) =>
-                  updateSetup({ priorityObjections: e.target.value })
-                }
-                className="w-full border p-3 rounded-lg"
-                rows={4}
-                placeholder="เช่น กลัวทำไม่ได้, ไม่มีเวลา, ไม่แน่ใจว่าคุ้มไหม, กลัวว่าไม่เหมาะกับตัวเอง"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="font-medium block mb-1">Launch Notes เพิ่มเติม</label>
-            <textarea
-              value={setup.launchNotes}
-              onChange={(e) => updateSetup({ launchNotes: e.target.value })}
-              className="w-full border p-3 rounded-lg"
-              rows={4}
-              placeholder="เช่น รอบนี้อยากเน้นคนที่ดู PLC ครบแล้ว, มีคนถามเรื่องไหนเยอะเป็นพิเศษ, โทนที่อยากใช้"
-            />
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={regenerateAllMessages}
+              disabled={isRegeneratingAll}
+              className="border px-5 py-3 rounded-lg hover:bg-gray-50 transition disabled:opacity-60"
+            >
+              สร้างใหม่
+            </button>
           </div>
         </div>
 
@@ -776,26 +793,11 @@ export default function LaunchPage() {
 
             return (
               <div key={config.key} className="border rounded-xl p-6 bg-white space-y-5">
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h2 className="text-2xl font-semibold mb-2">{config.title}</h2>
-                    <p className="text-sm leading-7 text-gray-700">
-                      {config.description}
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => generateMessages(config)}
-                    disabled={isLoading}
-                    className="bg-black text-white px-5 py-3 rounded-lg disabled:opacity-60"
-                  >
-                    {isLoading
-                      ? "กำลังสร้าง..."
-                      : messages.length > 0
-                      ? "สร้างใหม่"
-                      : "สร้างข้อความ"}
-                  </button>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-2">{config.title}</h2>
+                  <p className="text-sm leading-7 text-gray-700">
+                    {config.description}
+                  </p>
                 </div>
 
                 {isLoading && (
@@ -846,6 +848,21 @@ export default function LaunchPage() {
                     ยังไม่มีข้อความสำหรับวันนี้ กดสร้างเพื่อ generate ชุดข้อความตามบทบาทของวัน
                   </div>
                 )}
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => generateMessages(config)}
+                    disabled={isLoading}
+                    className="bg-black text-white px-5 py-3 rounded-lg disabled:opacity-60"
+                  >
+                    {isLoading
+                      ? "กำลังสร้าง..."
+                      : messages.length > 0
+                      ? "สร้างใหม่"
+                      : "สร้างข้อความ"}
+                  </button>
+                </div>
               </div>
             );
           })}

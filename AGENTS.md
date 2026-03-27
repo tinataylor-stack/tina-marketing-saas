@@ -13,10 +13,11 @@ Current tool flow:
    - Title Options
    - Suggested Format
    - CTA
-
-Planned next tool:
-
-4. Launch Sequence Builder based on Jeff Walker style prelaunch + launch workflow
+4. Launch Sequence Builder based on Jeff Walker style prelaunch + launch workflow:
+   - Step 1: Launch Foundation
+   - Step 2: Prelaunch Strategy
+   - Prelaunch Content
+   - Step 3: Launch LINE Broadcast
 
 This project is modular by design. Do not merge unrelated tools into one giant page or one giant API route.
 
@@ -70,6 +71,15 @@ Do not collapse strategy, execution, and campaign orchestration into one page un
 - Draft loads automatically
 - Other cards generate on click
 
+### Launch Sequence
+- `app/launch-sequence/page.tsx`
+- `app/launch-sequence/step-1/page.tsx`
+- `app/launch-sequence/step-2/page.tsx`
+- `app/launch-sequence/prelaunch/page.tsx`
+- `app/launch-sequence/prelaunch-content/page.tsx`
+- `app/launch-sequence/launch/page.tsx`
+- Launch is now an active product area in the repo, not just a planned tool
+
 ---
 
 ## Important Existing API Routes
@@ -82,6 +92,17 @@ Do not collapse strategy, execution, and campaign orchestration into one page un
 - `app/api/lead-magnet/title-options/route.ts`
 - `app/api/lead-magnet/suggested-format/route.ts`
 - `app/api/lead-magnet/cta-copy/route.ts`
+
+### Launch Sequence
+- `app/api/launch-sequence/prelaunch-plan/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-1/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-2/route.ts`
+- `app/api/launch-sequence/prelaunch-content/plc-3/route.ts`
+- `app/api/launch-sequence/launch/day-1-cart-open/route.ts`
+- `app/api/launch-sequence/launch/day-2-objection/route.ts`
+- `app/api/launch-sequence/launch/day-3-objection/route.ts`
+- `app/api/launch-sequence/launch/day-4-urgency/route.ts`
+- `app/api/launch-sequence/launch/day-5-cart-close/route.ts`
 
 When editing these routes, preserve the intended job of each route.
 
@@ -259,6 +280,12 @@ For new tools, use similarly clear names, for example:
 - `launchSequencePLC1`
 - `launchSequencePLC2`
 - `launchSequencePLC3`
+- `launchSequenceLaunchSetup`
+- `launchSequenceDay1Messages`
+- `launchSequenceDay2Messages`
+- `launchSequenceDay3Messages`
+- `launchSequenceDay4Messages`
+- `launchSequenceDay5Messages`
 
 ---
 
@@ -352,6 +379,10 @@ Likely direction:
 * Avatar Analyzer
 * Lead Magnet Builder
 * Launch Sequence Builder
+  * Step 1: Foundation
+  * Step 2: Prelaunch Strategy
+  * Prelaunch Content
+  * Step 3: Launch LINE Broadcast
 * Sales Assets / Content Tools
 
 Future work should preserve this system-builder direction.

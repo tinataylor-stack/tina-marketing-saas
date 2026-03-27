@@ -215,12 +215,13 @@ Content Generator keys:
   - bonuses
   - urgency mechanism
   - checkout direction
-  - launch notes
   - priority objections
+  - testimonial / proof notes
+  - launch notes
 - Step 3 uses a 5-day structure:
   - Day 1: Cart Open, 2 messages
   - Day 2: Objection Handling, 1 message
-  - Day 3: Objection Handling, 1 message
+  - Day 3: Proof / Belief, 1 message
   - Day 4: Objection Handling + Scarcity + Urgency, 2 messages
   - Day 5: Last Call / Cart Close, 3 messages
 - each day is generated through its own API route
@@ -230,11 +231,25 @@ Content Generator keys:
   - copy per message
   - in-block progress UI
 - Launch Setup has its own progress bar when the user clicks `สร้างใหม่`
+- the Launch Setup progress bar is currently displayed below the `หมายเหตุเพิ่มเติม` field
 - current behavior of Launch Setup `สร้างใหม่`:
   - clears old Day 1 - Day 5 launch outputs
   - auto-generates Day 1 only
   - leaves Day 2 - Day 5 for manual generation by block
 - launch prompts now explicitly forbid showing price anywhere in generated launch messages
+- launch prompt structure is now more specific:
+  - shared prompt emphasizes offer value, proof / belief, urgency, and action
+  - Day 2 is value-led
+  - Day 3 is proof-led and uses testimonial / proof notes when provided
+  - Day 4 is urgency-led with value support
+- testimonial / proof language is no longer meant to dominate every day
+- prompt rules now try to avoid repeating the same testimonial / proof angle across multiple days
+- current Launch Setup field labels on the page are:
+  - `Scarcity / Urgency สร้างความเร่งด่วน`
+  - `CTA`
+  - `ข้อโต้แย้งหรือข้ออ้างจากลูกค้า`
+  - `Testimonial หรือผลลัพธ์จากลูกค้าเก่า`
+  - `หมายเหตุเพิ่มเติม`
 
 ### Launch Hub cleanup
 - Step 3 card on `app/launch-sequence/page.tsx` no longer shows `Coming Soon`

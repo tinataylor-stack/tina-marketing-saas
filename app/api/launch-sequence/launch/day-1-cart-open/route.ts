@@ -22,6 +22,16 @@ export async function POST(req: Request) {
       messageCount: 2,
       dayGoal:
         "เปิดขายอย่างชัดเจน ทำให้คนรู้ว่า offer เปิดแล้ว พร้อมอธิบายว่าเหมาะกับใครและทำไมควรขยับตอนนี้",
+      dayLeadAngles: [
+        "Primary: launch announcement and offer value",
+        "Secondary: buyer fit and relevance",
+        "Supporting: light urgency only if it feels natural for Day 1",
+      ],
+      messageAnatomy: [
+        "Message 1 anatomy: open with the fact that the offer is now available, quickly name who this is for, state the painful situation or desired transformation it addresses, and close with a direct LINE-friendly CTA.",
+        "Message 2 anatomy: open from a hesitation, missed opportunity, or important realization, deepen why this matters now, reconnect the offer as the right next step, and close with a clear CTA.",
+        "Both messages should feel like sendable LINE broadcasts, not mini sales pages or launch notes.",
+      ],
       extraRules: [
         "Message 1 should announce that the cart is open and make the offer feel clear and relevant.",
         "Message 2 should deepen desire or clarity so the audience sees why this offer matters now.",

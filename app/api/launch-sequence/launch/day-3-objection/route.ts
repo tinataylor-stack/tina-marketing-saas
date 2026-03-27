@@ -18,15 +18,30 @@ export async function POST(req: Request) {
 
     return await createLaunchMessages(body, {
       schemaName: "launch_day_3_objection_message",
-      dayLabel: "Day 3: Objection Handling",
+      dayLabel: "Day 3: Proof / Belief",
       messageCount: 1,
       dayGoal:
-        "แก้ objection อีกมุมหนึ่งที่ต่างจาก Day 2 เพื่อพาคนที่ยังลังเลให้เห็นภาพว่าข้อเสนอนี้เหมาะกับเขาจริง",
+        "ใช้ proof, testimonial energy, หรือ transformation pattern เพื่อทำให้คนอ่านรู้สึกว่าคนแบบเขาก็ทำได้จริง และข้อเสนอนี้เหมาะกับเขา",
+      dayLeadAngles: [
+        "Primary: proof / testimonial / belief-transfer",
+        "Secondary: offer fit",
+        "Supporting: one different priority objection",
+      ],
+      messageAnatomy: [
+        "Open with a proof-led or testimonial-style headline angle that immediately makes the reader curious and hopeful.",
+        "Use the provided testimonial or proof notes when available; otherwise use believable transformation framing or pattern recognition.",
+        "Show why the result feels believable for someone like the reader, not just for a perfect or already-ready customer.",
+        "Reconnect that proof to why this offer is designed to help that kind of person.",
+        "Address one different hesitation from Priority Objections, but keep it inside the selling flow.",
+        "Make the message feel more confidence-building than defensive, and more headline-led than explanatory.",
+        "Close with a direct CTA.",
+      ],
       extraRules: [
-        "Choose a different objection angle or psychological block from Day 2.",
-        "The message should feel fresh, not like a rewritten version of the previous day's broadcast.",
-        "The body should create clarity and confidence before asking for action.",
-        "Keep the closing action pointed toward the offer and the provided checkout direction.",
+        "This message should feel different from Day 2 by leading with belief, not value-first explanation.",
+        "Use 'คนแบบคุณก็ทำได้' energy without sounding cheesy or making fake claims.",
+        "If testimonial or proof notes are provided, use them before fallback belief language.",
+        "Do not invent named testimonials if none were provided.",
+        "The message should increase self-belief and offer-fit at the same time.",
       ],
     });
   } catch (error) {
