@@ -44,7 +44,7 @@ export default function LeadMagnetStep2Page() {
   useEffect(() => {
     const savedAccess = localStorage.getItem("appAccessGranted");
 
-    if (savedAccess !== "yes") {
+    if (savedAccess !== "granted-v2") {
       window.location.href = "/";
       return;
     }

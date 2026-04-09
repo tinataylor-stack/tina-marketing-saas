@@ -76,7 +76,7 @@ function getInitialState(): PlannerPageState {
 
   const savedAccess = localStorage.getItem("appAccessGranted");
 
-  if (savedAccess !== "yes") {
+    if (savedAccess !== "granted-v2") {
     return {
       hasAccess: false,
       avatarAnalysis: "",

@@ -40,7 +40,7 @@ function getClientSnapshot(): ContentGeneratorSnapshot {
     return cachedSnapshotValue;
   }
 
-  if (savedAccess !== "yes") {
+  if (savedAccess !== "granted-v2") {
     cachedSnapshotKey = snapshotKey;
     cachedSnapshotValue = EMPTY_SNAPSHOT;
     return cachedSnapshotValue;

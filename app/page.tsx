@@ -11,14 +11,14 @@ export default function HomePage() {
 
   useEffect(() => {
     const savedAccess = localStorage.getItem("appAccessGranted");
-    if (savedAccess === "yes") {
+    if (savedAccess === "granted-v2") {
       setHasAccess(true);
     }
   }, []);
 
   const handleUnlock = () => {
     if (password === "AppKruTina2026") {
-      localStorage.setItem("appAccessGranted", "yes");
+      localStorage.setItem("appAccessGranted", "granted-v2");
       setHasAccess(true);
       setError("");
       return;
