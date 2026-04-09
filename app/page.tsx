@@ -17,7 +17,7 @@ export default function HomePage() {
   }, []);
 
   const handleUnlock = () => {
-    if (password === "TinaApp2026") {
+    if (password === "AppKruTina2026") {
       localStorage.setItem("appAccessGranted", "yes");
       setHasAccess(true);
       setError("");
